@@ -1,0 +1,72 @@
+<html>
+<head>
+<title>GameControllerAIs.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #0033b3;}
+.s1 { color: #080808;}
+.s2 { color: #1750eb;}
+.s3 { color: #067d17;}
+</style>
+</head>
+<body bgcolor="#ffffff">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#c0c0c0" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+GameControllerAIs.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">controller;</span>
+
+<span class="s0">import </span><span class="s1">components.ChessGridComponent;</span>
+<span class="s0">import </span><span class="s1">model.ChessPiece;</span>
+<span class="s0">import </span><span class="s1">view.ChessBoardPanel;</span>
+<span class="s0">import </span><span class="s1">view.StatusPanel;</span>
+
+<span class="s0">import </span><span class="s1">java.util.*;</span>
+
+<span class="s0">public class </span><span class="s1">GameControllerAIs </span><span class="s0">extends </span><span class="s1">GameController {</span>
+    <span class="s1">HashMap&lt;ChessGridComponent, Integer&gt; effectMap = </span><span class="s0">new </span><span class="s1">HashMap&lt;&gt;();</span>
+    <span class="s1">ArrayList&lt;Integer&gt; effectList = </span><span class="s0">new </span><span class="s1">ArrayList&lt;&gt;();</span>
+    <span class="s1">ChessPiece AIPlayer = ChessPiece.WHITE;</span>
+    <span class="s0">boolean </span><span class="s1">AIFirst = </span><span class="s0">false</span><span class="s1">;</span>
+
+    <span class="s0">public </span><span class="s1">GameControllerAIs(ChessBoardPanel gamePanel, StatusPanel statusPanel) {</span>
+        <span class="s0">super</span><span class="s1">(gamePanel, statusPanel);</span>
+        <span class="s0">if </span><span class="s1">(AIFirst) {</span>
+            <span class="s0">this</span><span class="s1">.currentPlayer = ChessPiece.WHITE;</span>
+            <span class="s1">AIPlayer = ChessPiece.BLACK;</span>
+            <span class="s1">blackScore = </span><span class="s2">4</span><span class="s1">;</span>
+            <span class="s1">whiteScore = </span><span class="s2">1</span><span class="s1">;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+
+    <span class="s1">@Override</span>
+    <span class="s0">public void </span><span class="s1">swapPlayer() {</span>
+        <span class="s0">if </span><span class="s1">(CanAct) {</span>
+            <span class="s0">super</span><span class="s1">.swapPlayer();</span>
+            <span class="s0">if </span><span class="s1">(currentPlayer == AIPlayer &amp;&amp; CanAct &amp;&amp; AvailableGrids().size() != </span><span class="s2">0</span><span class="s1">) {</span>
+                <span class="s0">for </span><span class="s1">(ChessGridComponent grid : AvailableGrids()) {</span>
+                    <span class="s1">effectMap.putIfAbsent(grid, gamePanel.all(grid.getRow(), grid.getCol(), AIPlayer).size());</span>
+                <span class="s1">}</span>
+                <span class="s1">Set&lt;Map.Entry&lt;ChessGridComponent, Integer&gt;&gt; entrySet = effectMap.entrySet();</span>
+                <span class="s0">for </span><span class="s1">(Map.Entry&lt;ChessGridComponent, Integer&gt; entry : entrySet) {</span>
+                    <span class="s1">effectList.add(entry.getValue());</span>
+                <span class="s1">}</span>
+                <span class="s1">effectList.sort(Comparator.naturalOrder());</span>
+                <span class="s0">for </span><span class="s1">(ChessGridComponent key : effectMap.keySet()) {</span>
+                    <span class="s0">if </span><span class="s1">(effectList.get(effectList.size() - </span><span class="s2">1</span><span class="s1">).equals(effectMap.get(key))) {</span>
+                        <span class="s1">key.AIStep(AIPlayer);</span>
+                        <span class="s1">System.out.println(</span><span class="s3">&quot;AI step on (&quot; </span><span class="s1">+ key.getRow() + </span><span class="s3">&quot;,&quot; </span><span class="s1">+ key.getCol() + </span><span class="s3">&quot;)&quot;</span><span class="s1">);</span>
+                        <span class="s0">break</span><span class="s1">;</span>
+                    <span class="s1">}</span>
+                <span class="s1">}</span>
+                <span class="s1">effectList.clear();</span>
+                <span class="s1">effectMap.clear();</span>
+                <span class="s0">super</span><span class="s1">.swapPlayer();</span>
+            <span class="s1">}</span>
+        <span class="s1">} </span><span class="s0">else super</span><span class="s1">.swapPlayer();</span>
+    <span class="s1">}</span>
+<span class="s1">}</span></pre>
+</body>
+</html>

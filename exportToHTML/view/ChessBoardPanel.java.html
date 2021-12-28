@@ -1,0 +1,508 @@
+<html>
+<head>
+<title>ChessBoardPanel.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #0033b3;}
+.s1 { color: #080808;}
+.s2 { color: #1750eb;}
+.s3 { color: #8c8c8c; font-style: italic;}
+</style>
+</head>
+<body bgcolor="#ffffff">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#c0c0c0" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+ChessBoardPanel.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">view;</span>
+
+<span class="s0">import </span><span class="s1">components.ChessGridComponent;</span>
+<span class="s0">import </span><span class="s1">model.ChessPiece;</span>
+
+<span class="s0">import </span><span class="s1">javax.swing.*;</span>
+<span class="s0">import </span><span class="s1">java.awt.*;</span>
+<span class="s0">import </span><span class="s1">java.util.ArrayList;</span>
+<span class="s0">import </span><span class="s1">java.util.Objects;</span>
+
+<span class="s0">public class </span><span class="s1">ChessBoardPanel </span><span class="s0">extends </span><span class="s1">JPanel {</span>
+    <span class="s0">private final int </span><span class="s1">CHESS_COUNT = </span><span class="s2">8</span><span class="s1">;</span>
+    <span class="s0">public </span><span class="s1">ChessGridComponent[][] chessGrids;</span>
+
+
+    <span class="s0">public </span><span class="s1">ChessGridComponent[][] getChessGrids() {</span>
+        <span class="s0">return </span><span class="s1">chessGrids;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public </span><span class="s1">ChessGridComponent getGridAt(</span><span class="s0">int </span><span class="s1">row, </span><span class="s0">int </span><span class="s1">col) {</span>
+        <span class="s0">return </span><span class="s1">chessGrids[row][col];</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public </span><span class="s1">ChessBoardPanel(</span><span class="s0">int </span><span class="s1">width, </span><span class="s0">int </span><span class="s1">height) {</span>
+        <span class="s0">this</span><span class="s1">.setVisible(</span><span class="s0">true</span><span class="s1">);</span>
+        <span class="s0">this</span><span class="s1">.setFocusable(</span><span class="s0">true</span><span class="s1">);</span>
+        <span class="s0">this</span><span class="s1">.setLayout(</span><span class="s0">null</span><span class="s1">);</span>
+        <span class="s0">this</span><span class="s1">.setOpaque(</span><span class="s0">false</span><span class="s1">);</span>
+        <span class="s0">int </span><span class="s1">length = Math.min(width, height);</span>
+        <span class="s0">this</span><span class="s1">.setSize(length, length);</span>
+        <span class="s1">ChessGridComponent.gridSize = length / CHESS_COUNT;</span>
+        <span class="s1">ChessGridComponent.chessSize = (</span><span class="s0">int</span><span class="s1">) (ChessGridComponent.gridSize * </span><span class="s2">0.8</span><span class="s1">);</span>
+        <span class="s3">//System.out.printf(&quot;width = %d height = %d gridSize = %d chessSize = %d\n&quot;, width, height, ChessGridComponent.gridSize, ChessGridComponent.chessSize);</span>
+
+        <span class="s1">initialChessGrids();</span><span class="s3">//return empty chessboard</span>
+        <span class="s1">initialGame();</span><span class="s3">//add initial four chess</span>
+        <span class="s1">repaint();</span>
+    <span class="s1">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* set an empty chessboard</span>
+     <span class="s3">*/</span>
+    <span class="s0">public int </span><span class="s1">w8(</span><span class="s0">int </span><span class="s1">row, </span><span class="s0">int </span><span class="s1">col, ChessPiece currentPlayer) {</span>
+        <span class="s0">int </span><span class="s1">count = </span><span class="s2">0</span><span class="s1">;</span>
+        <span class="s0">int </span><span class="s1">current = row - </span><span class="s2">1</span><span class="s1">;</span>
+        <span class="s0">if </span><span class="s1">(row == </span><span class="s2">0</span><span class="s1">) </span><span class="s0">return </span><span class="s1">count;</span>
+        <span class="s0">else </span><span class="s1">{</span>
+            <span class="s0">while </span><span class="s1">(</span><span class="s0">this</span><span class="s1">.chessGrids[current][col].getChessPiece() != </span><span class="s0">null </span><span class="s1">&amp;&amp; Objects.equals(currentPlayer.getopColer(), </span><span class="s0">this</span><span class="s1">.chessGrids[current][col].getChessPiece().getColor())) {</span>
+                <span class="s1">count++;</span>
+                <span class="s1">current--;</span>
+                <span class="s0">if </span><span class="s1">(current == -</span><span class="s2">1 </span><span class="s1">|| current == </span><span class="s2">8</span><span class="s1">) {</span>
+                    <span class="s1">current++;</span>
+                    <span class="s0">break</span><span class="s1">;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+            <span class="s0">if </span><span class="s1">(</span><span class="s0">this</span><span class="s1">.chessGrids[current][col].getChessPiece() == </span><span class="s0">null </span><span class="s1">|| !Objects.equals(currentPlayer.getColor(), </span><span class="s0">this</span><span class="s1">.chessGrids[current][col].getChessPiece().getColor()))</span>
+                <span class="s1">count = </span><span class="s2">0</span><span class="s1">;</span>
+        <span class="s1">}</span>
+        <span class="s0">return </span><span class="s1">count;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public int </span><span class="s1">d6(</span><span class="s0">int </span><span class="s1">row, </span><span class="s0">int </span><span class="s1">col, ChessPiece currentPlayer) {</span>
+        <span class="s0">int </span><span class="s1">count = </span><span class="s2">0</span><span class="s1">;</span>
+        <span class="s0">int </span><span class="s1">current = col + </span><span class="s2">1</span><span class="s1">;</span>
+        <span class="s0">if </span><span class="s1">(col == </span><span class="s2">7</span><span class="s1">) </span><span class="s0">return </span><span class="s1">count;</span>
+        <span class="s0">else </span><span class="s1">{</span>
+            <span class="s0">while </span><span class="s1">(</span><span class="s0">this</span><span class="s1">.chessGrids[row][current].getChessPiece() != </span><span class="s0">null </span><span class="s1">&amp;&amp; Objects.equals(</span><span class="s0">this</span><span class="s1">.chessGrids[row][current].getChessPiece().getColor(), currentPlayer.getopColer())) {</span>
+                <span class="s1">count++;</span>
+                <span class="s1">current++;</span>
+                <span class="s0">if </span><span class="s1">(current == </span><span class="s2">8</span><span class="s1">) {</span>
+                    <span class="s1">current--;</span>
+                    <span class="s0">break</span><span class="s1">;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+            <span class="s0">if </span><span class="s1">(</span><span class="s0">this</span><span class="s1">.chessGrids[row][current].getChessPiece() == </span><span class="s0">null </span><span class="s1">|| !Objects.equals(</span><span class="s0">this</span><span class="s1">.chessGrids[row][current].getChessPiece().getColor(), currentPlayer.getColor()))</span>
+                <span class="s1">count = </span><span class="s2">0</span><span class="s1">;</span>
+        <span class="s1">}</span>
+        <span class="s0">return </span><span class="s1">count;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public int </span><span class="s1">x2(</span><span class="s0">int </span><span class="s1">row, </span><span class="s0">int </span><span class="s1">col, ChessPiece currentPlayer) {</span>
+        <span class="s0">int </span><span class="s1">count = </span><span class="s2">0</span><span class="s1">;</span>
+        <span class="s0">int </span><span class="s1">current = row + </span><span class="s2">1</span><span class="s1">;</span>
+        <span class="s0">if </span><span class="s1">(row == </span><span class="s2">7</span><span class="s1">) </span><span class="s0">return </span><span class="s1">count;</span>
+        <span class="s0">else </span><span class="s1">{</span>
+            <span class="s0">while </span><span class="s1">(</span><span class="s0">this</span><span class="s1">.chessGrids[current][col].getChessPiece() != </span><span class="s0">null </span><span class="s1">&amp;&amp; Objects.equals(</span><span class="s0">this</span><span class="s1">.chessGrids[current][col].getChessPiece().getColor(), currentPlayer.getopColer())) {</span>
+                <span class="s1">count++;</span>
+                <span class="s1">current++;</span>
+                <span class="s0">if </span><span class="s1">(current == </span><span class="s2">8</span><span class="s1">) {</span>
+                    <span class="s1">current--;</span>
+                    <span class="s0">break</span><span class="s1">;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+            <span class="s0">if </span><span class="s1">(</span><span class="s0">this</span><span class="s1">.chessGrids[current][col].getChessPiece() == </span><span class="s0">null </span><span class="s1">|| !Objects.equals(</span><span class="s0">this</span><span class="s1">.chessGrids[current][col].getChessPiece().getColor(), currentPlayer.getColor()))</span>
+                <span class="s1">count = </span><span class="s2">0</span><span class="s1">;</span>
+        <span class="s1">}</span>
+        <span class="s0">return </span><span class="s1">count;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public int </span><span class="s1">a4(</span><span class="s0">int </span><span class="s1">row, </span><span class="s0">int </span><span class="s1">col, ChessPiece currentPlayer) {</span>
+        <span class="s0">int </span><span class="s1">count = </span><span class="s2">0</span><span class="s1">;</span>
+        <span class="s0">int </span><span class="s1">current = col - </span><span class="s2">1</span><span class="s1">;</span>
+        <span class="s0">if </span><span class="s1">(col == </span><span class="s2">0</span><span class="s1">) </span><span class="s0">return </span><span class="s1">count;</span>
+        <span class="s0">else </span><span class="s1">{</span>
+            <span class="s0">while </span><span class="s1">(</span><span class="s0">this</span><span class="s1">.chessGrids[row][current].getChessPiece() != </span><span class="s0">null </span><span class="s1">&amp;&amp; Objects.equals(</span><span class="s0">this</span><span class="s1">.chessGrids[row][current].getChessPiece().getColor(), currentPlayer.getopColer())) {</span>
+                <span class="s1">count++;</span>
+                <span class="s1">current = current - </span><span class="s2">1</span><span class="s1">;</span>
+                <span class="s0">if </span><span class="s1">(current == -</span><span class="s2">1 </span><span class="s1">|| current == </span><span class="s2">8</span><span class="s1">) {</span>
+                    <span class="s1">current++;</span>
+                    <span class="s0">break</span><span class="s1">;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+            <span class="s0">if </span><span class="s1">(</span><span class="s0">this</span><span class="s1">.chessGrids[row][current].getChessPiece() == </span><span class="s0">null </span><span class="s1">|| !Objects.equals(</span><span class="s0">this</span><span class="s1">.chessGrids[row][current].getChessPiece().getColor(), currentPlayer.getColor()))</span>
+                <span class="s1">count = </span><span class="s2">0</span><span class="s1">;</span>
+        <span class="s1">}</span>
+        <span class="s0">return </span><span class="s1">count;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public int </span><span class="s1">e9(</span><span class="s0">int </span><span class="s1">row, </span><span class="s0">int </span><span class="s1">col, ChessPiece currentPlayer) {</span>
+        <span class="s0">int </span><span class="s1">count = </span><span class="s2">0</span><span class="s1">;</span>
+        <span class="s0">int </span><span class="s1">currentx = row - </span><span class="s2">1</span><span class="s1">;</span>
+        <span class="s0">int </span><span class="s1">currenty = col + </span><span class="s2">1</span><span class="s1">;</span>
+        <span class="s0">if </span><span class="s1">(row == </span><span class="s2">0 </span><span class="s1">|| col == </span><span class="s2">7</span><span class="s1">) </span><span class="s0">return </span><span class="s1">count;</span>
+        <span class="s0">else </span><span class="s1">{</span>
+            <span class="s0">while </span><span class="s1">(</span><span class="s0">this</span><span class="s1">.chessGrids[currentx][currenty].getChessPiece() != </span><span class="s0">null </span><span class="s1">&amp;&amp; Objects.equals(</span><span class="s0">this</span><span class="s1">.chessGrids[currentx][currenty].getChessPiece().getColor(), currentPlayer.getopColer())) {</span>
+                <span class="s1">count++;</span>
+                <span class="s1">currentx = currentx - </span><span class="s2">1</span><span class="s1">;</span>
+                <span class="s1">currenty = currenty + </span><span class="s2">1</span><span class="s1">;</span>
+                <span class="s0">if </span><span class="s1">(currentx == -</span><span class="s2">1 </span><span class="s1">|| currentx == </span><span class="s2">8 </span><span class="s1">|| currenty == </span><span class="s2">8</span><span class="s1">) {</span>
+                    <span class="s1">currentx++;</span>
+                    <span class="s1">currenty--;</span>
+                    <span class="s0">break</span><span class="s1">;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+            <span class="s0">if </span><span class="s1">(</span><span class="s0">this</span><span class="s1">.chessGrids[currentx][currenty].getChessPiece() == </span><span class="s0">null </span><span class="s1">|| !Objects.equals(</span><span class="s0">this</span><span class="s1">.chessGrids[currentx][currenty].getChessPiece().getColor(), currentPlayer.getColor()))</span>
+                <span class="s1">count = </span><span class="s2">0</span><span class="s1">;</span>
+        <span class="s1">}</span>
+        <span class="s0">return </span><span class="s1">count;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public int </span><span class="s1">c3(</span><span class="s0">int </span><span class="s1">row, </span><span class="s0">int </span><span class="s1">col, ChessPiece currentPlayer) {</span>
+        <span class="s0">int </span><span class="s1">count = </span><span class="s2">0</span><span class="s1">;</span>
+        <span class="s0">int </span><span class="s1">currentx = row + </span><span class="s2">1</span><span class="s1">;</span>
+        <span class="s0">int </span><span class="s1">currenty = col + </span><span class="s2">1</span><span class="s1">;</span>
+        <span class="s0">if </span><span class="s1">(row == </span><span class="s2">7 </span><span class="s1">|| col == </span><span class="s2">7</span><span class="s1">) </span><span class="s0">return </span><span class="s1">count;</span>
+        <span class="s0">else </span><span class="s1">{</span>
+            <span class="s0">while </span><span class="s1">(</span><span class="s0">this</span><span class="s1">.chessGrids[currentx][currenty].getChessPiece() != </span><span class="s0">null </span><span class="s1">&amp;&amp; Objects.equals(</span><span class="s0">this</span><span class="s1">.chessGrids[currentx][currenty].getChessPiece().getColor(), currentPlayer.getopColer())) {</span>
+                <span class="s1">count++;</span>
+                <span class="s1">currentx = currentx + </span><span class="s2">1</span><span class="s1">;</span>
+                <span class="s1">currenty = currenty + </span><span class="s2">1</span><span class="s1">;</span>
+                <span class="s0">if </span><span class="s1">(currentx == </span><span class="s2">8 </span><span class="s1">|| currenty == </span><span class="s2">8</span><span class="s1">) {</span>
+                    <span class="s1">currentx--;</span>
+                    <span class="s1">currenty--;</span>
+                    <span class="s0">break</span><span class="s1">;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+            <span class="s0">if </span><span class="s1">(</span><span class="s0">this</span><span class="s1">.chessGrids[currentx][currenty].getChessPiece() == </span><span class="s0">null </span><span class="s1">|| !Objects.equals(</span><span class="s0">this</span><span class="s1">.chessGrids[currentx][currenty].getChessPiece().getColor(), currentPlayer.getColor()))</span>
+                <span class="s1">count = </span><span class="s2">0</span><span class="s1">;</span>
+        <span class="s1">}</span>
+        <span class="s0">return </span><span class="s1">count;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public int </span><span class="s1">z1(</span><span class="s0">int </span><span class="s1">row, </span><span class="s0">int </span><span class="s1">col, ChessPiece currentPlayer) {</span>
+        <span class="s0">int </span><span class="s1">count = </span><span class="s2">0</span><span class="s1">;</span>
+        <span class="s0">int </span><span class="s1">currentx = row + </span><span class="s2">1</span><span class="s1">;</span>
+        <span class="s0">int </span><span class="s1">currenty = col - </span><span class="s2">1</span><span class="s1">;</span>
+        <span class="s0">if </span><span class="s1">(row == </span><span class="s2">7 </span><span class="s1">|| col == </span><span class="s2">0</span><span class="s1">) </span><span class="s0">return </span><span class="s1">count;</span>
+        <span class="s0">else </span><span class="s1">{</span>
+            <span class="s0">while </span><span class="s1">(</span><span class="s0">this</span><span class="s1">.chessGrids[currentx][currenty].getChessPiece() != </span><span class="s0">null </span><span class="s1">&amp;&amp; Objects.equals(</span><span class="s0">this</span><span class="s1">.chessGrids[currentx][currenty].getChessPiece().getColor(), currentPlayer.getopColer())) {</span>
+                <span class="s1">count++;</span>
+                <span class="s1">currentx = currentx + </span><span class="s2">1</span><span class="s1">;</span>
+                <span class="s1">currenty = currenty - </span><span class="s2">1</span><span class="s1">;</span>
+                <span class="s0">if </span><span class="s1">(currenty == -</span><span class="s2">1 </span><span class="s1">|| currentx == </span><span class="s2">8 </span><span class="s1">|| currenty == </span><span class="s2">8</span><span class="s1">) {</span>
+                    <span class="s1">currentx--;</span>
+                    <span class="s1">currenty++;</span>
+                    <span class="s0">break</span><span class="s1">;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+            <span class="s0">if </span><span class="s1">(</span><span class="s0">this</span><span class="s1">.chessGrids[currentx][currenty].getChessPiece() == </span><span class="s0">null </span><span class="s1">|| !Objects.equals(</span><span class="s0">this</span><span class="s1">.chessGrids[currentx][currenty].getChessPiece().getColor(), currentPlayer.getColor()))</span>
+                <span class="s1">count = </span><span class="s2">0</span><span class="s1">;</span>
+        <span class="s1">}</span>
+        <span class="s0">return </span><span class="s1">count;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public int </span><span class="s1">q7(</span><span class="s0">int </span><span class="s1">row, </span><span class="s0">int </span><span class="s1">col, ChessPiece currentPlayer) {</span>
+        <span class="s0">int </span><span class="s1">count = </span><span class="s2">0</span><span class="s1">;</span>
+        <span class="s0">int </span><span class="s1">currentx = row - </span><span class="s2">1</span><span class="s1">;</span>
+        <span class="s0">int </span><span class="s1">currenty = col - </span><span class="s2">1</span><span class="s1">;</span>
+        <span class="s0">if </span><span class="s1">(row == </span><span class="s2">0 </span><span class="s1">|| col == </span><span class="s2">0</span><span class="s1">) </span><span class="s0">return </span><span class="s1">count;</span>
+        <span class="s0">else </span><span class="s1">{</span>
+            <span class="s0">while </span><span class="s1">(</span><span class="s0">this</span><span class="s1">.chessGrids[currentx][currenty].getChessPiece() != </span><span class="s0">null </span><span class="s1">&amp;&amp; Objects.equals(</span><span class="s0">this</span><span class="s1">.chessGrids[currentx][currenty].getChessPiece().getColor(), currentPlayer.getopColer())) {</span>
+                <span class="s1">count++;</span>
+                <span class="s1">currentx = currentx - </span><span class="s2">1</span><span class="s1">;</span>
+                <span class="s1">currenty = currenty - </span><span class="s2">1</span><span class="s1">;</span>
+                <span class="s0">if </span><span class="s1">(currentx == -</span><span class="s2">1 </span><span class="s1">|| currenty == -</span><span class="s2">1 </span><span class="s1">|| currentx == </span><span class="s2">8 </span><span class="s1">|| currenty == </span><span class="s2">8</span><span class="s1">) {</span>
+                    <span class="s1">currentx++;</span>
+                    <span class="s1">currenty++;</span>
+                    <span class="s0">break</span><span class="s1">;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+            <span class="s0">if </span><span class="s1">(</span><span class="s0">this</span><span class="s1">.chessGrids[currentx][currenty].getChessPiece() == </span><span class="s0">null </span><span class="s1">|| !Objects.equals(</span><span class="s0">this</span><span class="s1">.chessGrids[currentx][currenty].getChessPiece().getColor(), currentPlayer.getColor()))</span>
+                <span class="s1">count = </span><span class="s2">0</span><span class="s1">;</span>
+        <span class="s1">}</span>
+        <span class="s0">return </span><span class="s1">count;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public </span><span class="s1">ArrayList&lt;ChessGridComponent&gt; w8ex(</span><span class="s0">int </span><span class="s1">row, </span><span class="s0">int </span><span class="s1">col, ChessPiece currentPlayer) {</span>
+        <span class="s1">ArrayList&lt;ChessGridComponent&gt; w8gird = </span><span class="s0">new </span><span class="s1">ArrayList&lt;&gt;();</span>
+        <span class="s0">int </span><span class="s1">current = row - </span><span class="s2">1</span><span class="s1">;</span>
+        <span class="s0">if </span><span class="s1">(row == </span><span class="s2">0</span><span class="s1">) </span><span class="s0">return </span><span class="s1">w8gird;</span>
+        <span class="s0">else </span><span class="s1">{</span>
+            <span class="s0">while </span><span class="s1">(</span><span class="s0">this</span><span class="s1">.chessGrids[current][col].getChessPiece() != </span><span class="s0">null </span><span class="s1">&amp;&amp; Objects.equals(currentPlayer.getopColer(), </span><span class="s0">this</span><span class="s1">.chessGrids[current][col].getChessPiece().getColor())) {</span>
+                <span class="s1">w8gird.add(chessGrids[current][col]);</span>
+                <span class="s1">current--;</span>
+                <span class="s0">if </span><span class="s1">(current == -</span><span class="s2">1 </span><span class="s1">|| current == </span><span class="s2">8</span><span class="s1">) {</span>
+                    <span class="s1">current++;</span>
+                    <span class="s0">break</span><span class="s1">;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+            <span class="s0">if </span><span class="s1">(</span><span class="s0">this</span><span class="s1">.chessGrids[current][col].getChessPiece() == </span><span class="s0">null </span><span class="s1">|| !Objects.equals(currentPlayer.getColor(), </span><span class="s0">this</span><span class="s1">.chessGrids[current][col].getChessPiece().getColor())) {</span>
+                <span class="s1">w8gird.clear();</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+        <span class="s0">return </span><span class="s1">w8gird;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public </span><span class="s1">ArrayList&lt;ChessGridComponent&gt; d6ex(</span><span class="s0">int </span><span class="s1">row, </span><span class="s0">int </span><span class="s1">col, ChessPiece currentPlayer) {</span>
+        <span class="s0">int </span><span class="s1">current = col + </span><span class="s2">1</span><span class="s1">;</span>
+        <span class="s1">ArrayList&lt;ChessGridComponent&gt; d6grids = </span><span class="s0">new </span><span class="s1">ArrayList&lt;&gt;();</span>
+        <span class="s0">if </span><span class="s1">(col == </span><span class="s2">7</span><span class="s1">) </span><span class="s0">return </span><span class="s1">d6grids;</span>
+        <span class="s0">else </span><span class="s1">{</span>
+            <span class="s0">while </span><span class="s1">(</span><span class="s0">this</span><span class="s1">.chessGrids[row][current].getChessPiece() != </span><span class="s0">null </span><span class="s1">&amp;&amp; Objects.equals(</span><span class="s0">this</span><span class="s1">.chessGrids[row][current].getChessPiece().getColor(), currentPlayer.getopColer())) {</span>
+                <span class="s1">d6grids.add(chessGrids[row][current]);</span>
+                <span class="s1">current++;</span>
+                <span class="s0">if </span><span class="s1">(current == </span><span class="s2">8</span><span class="s1">) {</span>
+                    <span class="s1">current--;</span>
+                    <span class="s0">break</span><span class="s1">;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+            <span class="s0">if </span><span class="s1">(</span><span class="s0">this</span><span class="s1">.chessGrids[row][current].getChessPiece() == </span><span class="s0">null </span><span class="s1">|| !Objects.equals(</span><span class="s0">this</span><span class="s1">.chessGrids[row][current].getChessPiece().getColor(), currentPlayer.getColor())) {</span>
+                <span class="s1">d6grids.clear();</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+        <span class="s0">return </span><span class="s1">d6grids;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public </span><span class="s1">ArrayList&lt;ChessGridComponent&gt; x2ex(</span><span class="s0">int </span><span class="s1">row, </span><span class="s0">int </span><span class="s1">col, ChessPiece currentPlayer) {</span>
+        <span class="s1">ArrayList&lt;ChessGridComponent&gt; x2grids = </span><span class="s0">new </span><span class="s1">ArrayList&lt;&gt;();</span>
+        <span class="s0">int </span><span class="s1">current = row + </span><span class="s2">1</span><span class="s1">;</span>
+        <span class="s0">if </span><span class="s1">(row == </span><span class="s2">7</span><span class="s1">) </span><span class="s0">return </span><span class="s1">x2grids;</span>
+        <span class="s0">else </span><span class="s1">{</span>
+            <span class="s0">while </span><span class="s1">(</span><span class="s0">this</span><span class="s1">.chessGrids[current][col].getChessPiece() != </span><span class="s0">null </span><span class="s1">&amp;&amp; Objects.equals(</span><span class="s0">this</span><span class="s1">.chessGrids[current][col].getChessPiece().getColor(), currentPlayer.getopColer())) {</span>
+                <span class="s1">x2grids.add(chessGrids[current][col]);</span>
+                <span class="s1">current++;</span>
+                <span class="s0">if </span><span class="s1">(current == </span><span class="s2">8</span><span class="s1">) {</span>
+                    <span class="s1">current--;</span>
+                    <span class="s0">break</span><span class="s1">;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+            <span class="s0">if </span><span class="s1">(</span><span class="s0">this</span><span class="s1">.chessGrids[current][col].getChessPiece() == </span><span class="s0">null </span><span class="s1">|| !Objects.equals(</span><span class="s0">this</span><span class="s1">.chessGrids[current][col].getChessPiece().getColor(), currentPlayer.getColor())) {</span>
+                <span class="s1">x2grids.clear();</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+        <span class="s0">return </span><span class="s1">x2grids;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public </span><span class="s1">ArrayList&lt;ChessGridComponent&gt; a4ex(</span><span class="s0">int </span><span class="s1">row, </span><span class="s0">int </span><span class="s1">col, ChessPiece currentPlayer) {</span>
+        <span class="s1">ArrayList&lt;ChessGridComponent&gt; a4grids = </span><span class="s0">new </span><span class="s1">ArrayList&lt;&gt;();</span>
+        <span class="s0">int </span><span class="s1">current = col - </span><span class="s2">1</span><span class="s1">;</span>
+        <span class="s0">if </span><span class="s1">(col == </span><span class="s2">0</span><span class="s1">) </span><span class="s0">return </span><span class="s1">a4grids;</span>
+        <span class="s0">else </span><span class="s1">{</span>
+            <span class="s0">while </span><span class="s1">(</span><span class="s0">this</span><span class="s1">.chessGrids[row][current].getChessPiece() != </span><span class="s0">null </span><span class="s1">&amp;&amp; Objects.equals(</span><span class="s0">this</span><span class="s1">.chessGrids[row][current].getChessPiece().getColor(), currentPlayer.getopColer())) {</span>
+                <span class="s1">a4grids.add(chessGrids[row][current]);</span>
+                <span class="s1">current = current - </span><span class="s2">1</span><span class="s1">;</span>
+                <span class="s0">if </span><span class="s1">(current == -</span><span class="s2">1 </span><span class="s1">|| current == </span><span class="s2">8</span><span class="s1">) {</span>
+                    <span class="s1">current++;</span>
+                    <span class="s0">break</span><span class="s1">;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+            <span class="s0">if </span><span class="s1">(</span><span class="s0">this</span><span class="s1">.chessGrids[row][current].getChessPiece() == </span><span class="s0">null </span><span class="s1">|| !Objects.equals(</span><span class="s0">this</span><span class="s1">.chessGrids[row][current].getChessPiece().getColor(), currentPlayer.getColor())) {</span>
+                <span class="s1">a4grids.clear();</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+        <span class="s0">return </span><span class="s1">a4grids;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public </span><span class="s1">ArrayList&lt;ChessGridComponent&gt; e9ex(</span><span class="s0">int </span><span class="s1">row, </span><span class="s0">int </span><span class="s1">col, ChessPiece currentPlayer) {</span>
+        <span class="s1">ArrayList&lt;ChessGridComponent&gt; e9grids = </span><span class="s0">new </span><span class="s1">ArrayList&lt;&gt;();</span>
+        <span class="s0">int </span><span class="s1">currentx = row - </span><span class="s2">1</span><span class="s1">;</span>
+        <span class="s0">int </span><span class="s1">currenty = col + </span><span class="s2">1</span><span class="s1">;</span>
+        <span class="s0">if </span><span class="s1">(row == </span><span class="s2">0 </span><span class="s1">|| col == </span><span class="s2">7</span><span class="s1">) </span><span class="s0">return </span><span class="s1">e9grids;</span>
+        <span class="s0">else </span><span class="s1">{</span>
+            <span class="s0">while </span><span class="s1">(</span><span class="s0">this</span><span class="s1">.chessGrids[currentx][currenty].getChessPiece() != </span><span class="s0">null </span><span class="s1">&amp;&amp; Objects.equals(</span><span class="s0">this</span><span class="s1">.chessGrids[currentx][currenty].getChessPiece().getColor(), currentPlayer.getopColer())) {</span>
+                <span class="s1">e9grids.add(chessGrids[currentx][currenty]);</span>
+                <span class="s1">currentx = currentx - </span><span class="s2">1</span><span class="s1">;</span>
+                <span class="s1">currenty = currenty + </span><span class="s2">1</span><span class="s1">;</span>
+                <span class="s0">if </span><span class="s1">(currentx == -</span><span class="s2">1 </span><span class="s1">|| currentx == </span><span class="s2">8 </span><span class="s1">|| currenty == </span><span class="s2">8</span><span class="s1">) {</span>
+                    <span class="s1">currentx++;</span>
+                    <span class="s1">currenty--;</span>
+                    <span class="s0">break</span><span class="s1">;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+            <span class="s0">if </span><span class="s1">(</span><span class="s0">this</span><span class="s1">.chessGrids[currentx][currenty].getChessPiece() == </span><span class="s0">null </span><span class="s1">|| !Objects.equals(</span><span class="s0">this</span><span class="s1">.chessGrids[currentx][currenty].getChessPiece().getColor(), currentPlayer.getColor())) {</span>
+                <span class="s1">e9grids.clear();</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+        <span class="s0">return </span><span class="s1">e9grids;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public </span><span class="s1">ArrayList&lt;ChessGridComponent&gt; c3ex(</span><span class="s0">int </span><span class="s1">row, </span><span class="s0">int </span><span class="s1">col, ChessPiece currentPlayer) {</span>
+        <span class="s1">ArrayList&lt;ChessGridComponent&gt; c3grids = </span><span class="s0">new </span><span class="s1">ArrayList&lt;&gt;();</span>
+        <span class="s0">int </span><span class="s1">currentx = row + </span><span class="s2">1</span><span class="s1">;</span>
+        <span class="s0">int </span><span class="s1">currenty = col + </span><span class="s2">1</span><span class="s1">;</span>
+        <span class="s0">if </span><span class="s1">(row == </span><span class="s2">7 </span><span class="s1">|| col == </span><span class="s2">7</span><span class="s1">) </span><span class="s0">return </span><span class="s1">c3grids;</span>
+        <span class="s0">else </span><span class="s1">{</span>
+            <span class="s0">while </span><span class="s1">(</span><span class="s0">this</span><span class="s1">.chessGrids[currentx][currenty].getChessPiece() != </span><span class="s0">null </span><span class="s1">&amp;&amp; Objects.equals(</span><span class="s0">this</span><span class="s1">.chessGrids[currentx][currenty].getChessPiece().getColor(), currentPlayer.getopColer())) {</span>
+                <span class="s1">c3grids.add(chessGrids[currentx][currenty]);</span>
+                <span class="s1">currentx = currentx + </span><span class="s2">1</span><span class="s1">;</span>
+                <span class="s1">currenty = currenty + </span><span class="s2">1</span><span class="s1">;</span>
+                <span class="s0">if </span><span class="s1">(currentx == </span><span class="s2">8 </span><span class="s1">|| currenty == </span><span class="s2">8</span><span class="s1">) {</span>
+                    <span class="s1">currentx--;</span>
+                    <span class="s1">currenty--;</span>
+                    <span class="s0">break</span><span class="s1">;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+            <span class="s0">if </span><span class="s1">(</span><span class="s0">this</span><span class="s1">.chessGrids[currentx][currenty].getChessPiece() == </span><span class="s0">null </span><span class="s1">|| !Objects.equals(</span><span class="s0">this</span><span class="s1">.chessGrids[currentx][currenty].getChessPiece().getColor(), currentPlayer.getColor())) {</span>
+                <span class="s1">c3grids.clear();</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+        <span class="s0">return </span><span class="s1">c3grids;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public </span><span class="s1">ArrayList&lt;ChessGridComponent&gt; z1ex(</span><span class="s0">int </span><span class="s1">row, </span><span class="s0">int </span><span class="s1">col, ChessPiece currentPlayer) {</span>
+        <span class="s1">ArrayList&lt;ChessGridComponent&gt; z1grids = </span><span class="s0">new </span><span class="s1">ArrayList&lt;&gt;();</span>
+        <span class="s0">int </span><span class="s1">currentx = row + </span><span class="s2">1</span><span class="s1">;</span>
+        <span class="s0">int </span><span class="s1">currenty = col - </span><span class="s2">1</span><span class="s1">;</span>
+        <span class="s0">if </span><span class="s1">(row == </span><span class="s2">7 </span><span class="s1">|| col == </span><span class="s2">0</span><span class="s1">) </span><span class="s0">return </span><span class="s1">z1grids;</span>
+        <span class="s0">else </span><span class="s1">{</span>
+            <span class="s0">while </span><span class="s1">(</span><span class="s0">this</span><span class="s1">.chessGrids[currentx][currenty].getChessPiece() != </span><span class="s0">null </span><span class="s1">&amp;&amp; Objects.equals(</span><span class="s0">this</span><span class="s1">.chessGrids[currentx][currenty].getChessPiece().getColor(), currentPlayer.getopColer())) {</span>
+                <span class="s1">z1grids.add(chessGrids[currentx][currenty]);</span>
+                <span class="s1">currentx = currentx + </span><span class="s2">1</span><span class="s1">;</span>
+                <span class="s1">currenty = currenty - </span><span class="s2">1</span><span class="s1">;</span>
+                <span class="s0">if </span><span class="s1">(currenty == -</span><span class="s2">1 </span><span class="s1">|| currentx == </span><span class="s2">8 </span><span class="s1">|| currenty == </span><span class="s2">8</span><span class="s1">) {</span>
+                    <span class="s1">currentx--;</span>
+                    <span class="s1">currenty++;</span>
+                    <span class="s0">break</span><span class="s1">;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+            <span class="s0">if </span><span class="s1">(</span><span class="s0">this</span><span class="s1">.chessGrids[currentx][currenty].getChessPiece() == </span><span class="s0">null </span><span class="s1">|| !Objects.equals(</span><span class="s0">this</span><span class="s1">.chessGrids[currentx][currenty].getChessPiece().getColor(), currentPlayer.getColor())) {</span>
+                <span class="s1">z1grids.clear();</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+        <span class="s0">return </span><span class="s1">z1grids;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public </span><span class="s1">ArrayList&lt;ChessGridComponent&gt; q7ex(</span><span class="s0">int </span><span class="s1">row, </span><span class="s0">int </span><span class="s1">col, ChessPiece currentPlayer) {</span>
+        <span class="s1">ArrayList&lt;ChessGridComponent&gt; q7grids = </span><span class="s0">new </span><span class="s1">ArrayList&lt;&gt;();</span>
+        <span class="s0">int </span><span class="s1">currentx = row - </span><span class="s2">1</span><span class="s1">;</span>
+        <span class="s0">int </span><span class="s1">currenty = col - </span><span class="s2">1</span><span class="s1">;</span>
+        <span class="s0">if </span><span class="s1">(row == </span><span class="s2">0 </span><span class="s1">|| col == </span><span class="s2">0</span><span class="s1">) </span><span class="s0">return </span><span class="s1">q7grids;</span>
+        <span class="s0">else </span><span class="s1">{</span>
+            <span class="s0">while </span><span class="s1">(</span><span class="s0">this</span><span class="s1">.chessGrids[currentx][currenty].getChessPiece() != </span><span class="s0">null </span><span class="s1">&amp;&amp; Objects.equals(</span><span class="s0">this</span><span class="s1">.chessGrids[currentx][currenty].getChessPiece().getColor(), currentPlayer.getopColer())) {</span>
+                <span class="s1">q7grids.add(chessGrids[currentx][currenty]);</span>
+                <span class="s1">currentx = currentx - </span><span class="s2">1</span><span class="s1">;</span>
+                <span class="s1">currenty = currenty - </span><span class="s2">1</span><span class="s1">;</span>
+                <span class="s0">if </span><span class="s1">(currentx == -</span><span class="s2">1 </span><span class="s1">|| currenty == -</span><span class="s2">1 </span><span class="s1">|| currentx == </span><span class="s2">8 </span><span class="s1">|| currenty == </span><span class="s2">8</span><span class="s1">) {</span>
+                    <span class="s1">currentx++;</span>
+                    <span class="s1">currenty++;</span>
+                    <span class="s0">break</span><span class="s1">;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+            <span class="s0">if </span><span class="s1">(</span><span class="s0">this</span><span class="s1">.chessGrids[currentx][currenty].getChessPiece() == </span><span class="s0">null </span><span class="s1">|| !Objects.equals(</span><span class="s0">this</span><span class="s1">.chessGrids[currentx][currenty].getChessPiece().getColor(), currentPlayer.getColor())) {</span>
+                <span class="s1">q7grids.clear();</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+        <span class="s0">return </span><span class="s1">q7grids;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public </span><span class="s1">ArrayList&lt;ChessGridComponent&gt; all(</span><span class="s0">int </span><span class="s1">row, </span><span class="s0">int </span><span class="s1">col, ChessPiece currentPlayer) {</span>
+        <span class="s1">ArrayList&lt;ChessGridComponent&gt; all = </span><span class="s0">new </span><span class="s1">ArrayList&lt;&gt;();</span>
+        <span class="s1">all.addAll(w8ex(row, col, currentPlayer));</span>
+        <span class="s1">all.addAll(d6ex(row, col, currentPlayer));</span>
+        <span class="s1">all.addAll(x2ex(row, col, currentPlayer));</span>
+        <span class="s1">all.addAll(a4ex(row, col, currentPlayer));</span>
+        <span class="s1">all.addAll(e9ex(row, col, currentPlayer));</span>
+        <span class="s1">all.addAll(c3ex(row, col, currentPlayer));</span>
+        <span class="s1">all.addAll(z1ex(row, col, currentPlayer));</span>
+        <span class="s1">all.addAll(q7ex(row, col, currentPlayer));</span>
+        <span class="s0">return </span><span class="s1">all;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public void </span><span class="s1">initialChessGrids() {</span>
+        <span class="s3">//创建棋盘数组</span>
+        <span class="s1">chessGrids = </span><span class="s0">new </span><span class="s1">ChessGridComponent[CHESS_COUNT][CHESS_COUNT];</span>
+        <span class="s3">//draw all chess grids</span>
+        <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">i = </span><span class="s2">0</span><span class="s1">; i &lt; CHESS_COUNT; i++) {</span>
+            <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">j = </span><span class="s2">0</span><span class="s1">; j &lt; CHESS_COUNT; j++) {</span>
+                <span class="s1">ChessGridComponent gridComponent = </span><span class="s0">new </span><span class="s1">ChessGridComponent(i, j);</span>
+                <span class="s1">gridComponent.setLocation(j * ChessGridComponent.gridSize, i * ChessGridComponent.gridSize);</span>
+                <span class="s1">chessGrids[i][j] = gridComponent;</span>
+                <span class="s0">this</span><span class="s1">.add(chessGrids[i][j]);</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* initial origin four chess</span>
+     <span class="s3">*/</span>
+    <span class="s0">public void </span><span class="s1">initialGame() {</span>
+        <span class="s1">chessGrids[</span><span class="s2">3</span><span class="s1">][</span><span class="s2">3</span><span class="s1">].setChessPiece(ChessPiece.WHITE);</span>
+        <span class="s1">chessGrids[</span><span class="s2">3</span><span class="s1">][</span><span class="s2">4</span><span class="s1">].setChessPiece(ChessPiece.BLACK);</span>
+        <span class="s1">chessGrids[</span><span class="s2">4</span><span class="s1">][</span><span class="s2">3</span><span class="s1">].setChessPiece(ChessPiece.BLACK);</span>
+        <span class="s1">chessGrids[</span><span class="s2">4</span><span class="s1">][</span><span class="s2">4</span><span class="s1">].setChessPiece(ChessPiece.WHITE);</span>
+
+    <span class="s1">}</span>
+
+    <span class="s0">public void </span><span class="s1">resetChessGrids() {</span>
+        <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">i = </span><span class="s2">0</span><span class="s1">; i &lt; CHESS_COUNT; i++) {</span>
+            <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">j = </span><span class="s2">0</span><span class="s1">; j &lt; CHESS_COUNT; j++) {</span>
+                <span class="s1">chessGrids[i][j].setChessPiece(</span><span class="s0">null</span><span class="s1">);</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+        <span class="s1">chessGrids[</span><span class="s2">3</span><span class="s1">][</span><span class="s2">3</span><span class="s1">].setChessPiece(ChessPiece.WHITE);</span>
+        <span class="s1">chessGrids[</span><span class="s2">3</span><span class="s1">][</span><span class="s2">4</span><span class="s1">].setChessPiece(ChessPiece.BLACK);</span>
+        <span class="s1">chessGrids[</span><span class="s2">4</span><span class="s1">][</span><span class="s2">3</span><span class="s1">].setChessPiece(ChessPiece.BLACK);</span>
+        <span class="s1">chessGrids[</span><span class="s2">4</span><span class="s1">][</span><span class="s2">4</span><span class="s1">].setChessPiece(ChessPiece.WHITE);</span>
+        <span class="s1">repaint();</span>
+    <span class="s1">}</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">protected void </span><span class="s1">paintComponent(Graphics g) {</span>
+        <span class="s0">super</span><span class="s1">.paintComponent(g);</span>
+        <span class="s1">g.setColor(Color.BLACK);</span>
+        <span class="s3">//g.fillRect(0, 0, this.getWidth(), this.getHeight());</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public boolean </span><span class="s1">canClickGrid(</span><span class="s0">int </span><span class="s1">row, </span><span class="s0">int </span><span class="s1">col, ChessPiece currentPlayer) {</span>
+        <span class="s0">if </span><span class="s1">(chessGrids[row][col].getChessPiece() == </span><span class="s0">null </span><span class="s1">)</span>
+            <span class="s0">if </span><span class="s1">(!(q7(row, col, currentPlayer) == </span><span class="s2">0 </span><span class="s1">&amp;&amp; w8(row, col, currentPlayer) == </span><span class="s2">0 </span><span class="s1">&amp;&amp; e9(row, col, currentPlayer) == </span><span class="s2">0 </span><span class="s1">&amp;&amp; d6(row, col, currentPlayer) == </span><span class="s2">0 </span><span class="s1">&amp;&amp; c3(row, col, currentPlayer) == </span><span class="s2">0 </span><span class="s1">&amp;&amp; x2(row, col, currentPlayer) == </span><span class="s2">0 </span><span class="s1">&amp;&amp; z1(row, col, currentPlayer) == </span><span class="s2">0 </span><span class="s1">&amp;&amp; a4(row, col, currentPlayer) == </span><span class="s2">0</span><span class="s1">)) {</span>
+                <span class="s0">return true</span><span class="s1">;</span>
+            <span class="s1">}</span>
+        <span class="s0">return false</span><span class="s1">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public int</span><span class="s1">[][] readGamePanel() {</span>
+        <span class="s0">int</span><span class="s1">[][] ints = </span><span class="s0">new int</span><span class="s1">[</span><span class="s2">8</span><span class="s1">][</span><span class="s2">8</span><span class="s1">];</span>
+        <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">i = </span><span class="s2">0</span><span class="s1">; i &lt; </span><span class="s2">8</span><span class="s1">; i++) {</span>
+            <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">j = </span><span class="s2">0</span><span class="s1">; j &lt; </span><span class="s2">8</span><span class="s1">; j++) {</span>
+                <span class="s0">if </span><span class="s1">(chessGrids[i][j].getChessPiece() == (ChessPiece.BLACK)) {</span>
+                    <span class="s1">ints[i][j] = -</span><span class="s2">1</span><span class="s1">;</span>
+                <span class="s1">} </span><span class="s0">else if </span><span class="s1">(chessGrids[i][j].getChessPiece() == (ChessPiece.WHITE)) {</span>
+                    <span class="s1">ints[i][j] = </span><span class="s2">1</span><span class="s1">;</span>
+                <span class="s1">} </span><span class="s0">else if </span><span class="s1">(chessGrids[i][j].getChessPiece() == (</span><span class="s0">null</span><span class="s1">)) {</span>
+                    <span class="s1">ints[i][j] = </span><span class="s2">0</span><span class="s1">;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+        <span class="s0">return </span><span class="s1">ints;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public int </span><span class="s1">countBlack() {</span>
+        <span class="s0">int </span><span class="s1">black = </span><span class="s2">0</span><span class="s1">;</span>
+        <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">i = </span><span class="s2">0</span><span class="s1">; i &lt; </span><span class="s2">8</span><span class="s1">; i++) {</span>
+            <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">j = </span><span class="s2">0</span><span class="s1">; j &lt; </span><span class="s2">8</span><span class="s1">; j++) {</span>
+                <span class="s0">if </span><span class="s1">(chessGrids[i][j].getChessPiece() == (ChessPiece.BLACK)) {</span>
+                    <span class="s1">black++;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+        <span class="s0">return </span><span class="s1">black;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public int </span><span class="s1">countWhite() {</span>
+        <span class="s0">int </span><span class="s1">white = </span><span class="s2">0</span><span class="s1">;</span>
+        <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">i = </span><span class="s2">0</span><span class="s1">; i &lt; </span><span class="s2">8</span><span class="s1">; i++) {</span>
+            <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">j = </span><span class="s2">0</span><span class="s1">; j &lt; </span><span class="s2">8</span><span class="s1">; j++) {</span>
+                <span class="s0">if </span><span class="s1">(chessGrids[i][j].getChessPiece() == (ChessPiece.WHITE)) {</span>
+                    <span class="s1">white++;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+        <span class="s0">return </span><span class="s1">white;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public boolean </span><span class="s1">isEmpty(</span><span class="s0">int </span><span class="s1">row, </span><span class="s0">int </span><span class="s1">col) {</span>
+        <span class="s0">return </span><span class="s1">chessGrids[row][col].getChessPiece() == </span><span class="s0">null</span><span class="s1">;</span>
+    <span class="s1">}</span>
+<span class="s1">}</span>
+</pre>
+</body>
+</html>

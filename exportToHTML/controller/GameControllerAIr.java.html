@@ -1,0 +1,60 @@
+<html>
+<head>
+<title>GameControllerAIr.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #0033b3;}
+.s1 { color: #080808;}
+.s2 { color: #8c8c8c; font-style: italic;}
+.s3 { color: #1750eb;}
+</style>
+</head>
+<body bgcolor="#ffffff">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#c0c0c0" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+GameControllerAIr.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">controller;</span>
+<span class="s2">//3.0new</span>
+
+<span class="s0">import </span><span class="s1">model.ChessPiece;</span>
+<span class="s0">import </span><span class="s1">view.ChessBoardPanel;</span>
+<span class="s0">import </span><span class="s1">view.StatusPanel;</span>
+
+<span class="s0">import </span><span class="s1">java.awt.*;</span>
+<span class="s0">import </span><span class="s1">java.util.Timer;</span>
+
+<span class="s0">import static </span><span class="s1">java.lang.Math.random;</span>
+
+<span class="s0">public class </span><span class="s1">GameControllerAIr </span><span class="s0">extends </span><span class="s1">GameController {</span>
+    <span class="s0">int </span><span class="s1">randomNo = </span><span class="s3">0</span><span class="s1">;</span>
+    <span class="s0">boolean </span><span class="s1">AIFirst = </span><span class="s0">false</span><span class="s1">;</span>
+    <span class="s1">ChessPiece AIPlayer = ChessPiece.WHITE;</span>
+
+    <span class="s0">public </span><span class="s1">GameControllerAIr(ChessBoardPanel gamePanel, StatusPanel statusPanel) {</span>
+        <span class="s0">super</span><span class="s1">(gamePanel, statusPanel);</span>
+        <span class="s0">if </span><span class="s1">(AIFirst) {</span>
+            <span class="s0">this</span><span class="s1">.currentPlayer = ChessPiece.WHITE;</span>
+            <span class="s1">AIPlayer = ChessPiece.BLACK;</span>
+            <span class="s1">blackScore = </span><span class="s3">4</span><span class="s1">;</span>
+            <span class="s1">whiteScore = </span><span class="s3">1</span><span class="s1">;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">public void </span><span class="s1">swapPlayer() {</span>
+        <span class="s0">if </span><span class="s1">(CanAct) {</span>
+            <span class="s0">super</span><span class="s1">.swapPlayer();</span>
+            <span class="s0">if </span><span class="s1">(currentPlayer == AIPlayer &amp;&amp; AvailableGrids().size() != </span><span class="s3">0</span><span class="s1">) {</span>
+                <span class="s1">randomNo = (</span><span class="s0">int</span><span class="s1">) (random() * (AvailableGrids().size()));</span>
+                <span class="s1">AvailableGrids().get(randomNo).AIStep(AIPlayer);</span>
+            <span class="s1">}</span>
+            <span class="s0">super</span><span class="s1">.swapPlayer();</span>
+        <span class="s1">} </span><span class="s0">else super</span><span class="s1">.swapPlayer();</span>
+    <span class="s1">}</span>
+<span class="s1">}</span>
+
+</pre>
+</body>
+</html>

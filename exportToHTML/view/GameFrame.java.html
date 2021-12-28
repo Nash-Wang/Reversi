@@ -1,0 +1,249 @@
+<html>
+<head>
+<title>GameFrame.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #0033b3;}
+.s1 { color: #080808;}
+.s2 { color: #8c8c8c; font-style: italic;}
+.s3 { color: #067d17;}
+.s4 { color: #0037a6;}
+.s5 { color: #1750eb;}
+</style>
+</head>
+<body bgcolor="#ffffff">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#c0c0c0" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+GameFrame.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">view;</span>
+
+<span class="s0">import </span><span class="s1">components.Step;</span>
+<span class="s0">import </span><span class="s1">controller.GameController;</span>
+<span class="s0">import </span><span class="s1">controller.GameControllerAIr;</span>
+<span class="s0">import </span><span class="s1">controller.GameControllerAIs;</span>
+
+<span class="s0">import </span><span class="s1">javax.swing.*;</span>
+<span class="s0">import </span><span class="s1">java.awt.*;</span>
+<span class="s0">import </span><span class="s1">java.awt.event.ComponentAdapter;</span>
+<span class="s0">import </span><span class="s1">java.awt.event.ComponentEvent;</span>
+<span class="s0">import </span><span class="s1">java.util.List;</span>
+
+<span class="s0">public class </span><span class="s1">GameFrame </span><span class="s0">extends </span><span class="s1">JFrame {</span>
+    <span class="s0">public static </span><span class="s1">GameController controller;</span>
+    <span class="s0">protected </span><span class="s1">ChessBoardPanel chessBoardPanel;</span>
+    <span class="s0">protected </span><span class="s1">StatusPanel statusPanel;</span>
+
+    <span class="s0">public </span><span class="s1">GameFrame(</span><span class="s0">int </span><span class="s1">frameSize) {</span><span class="s2">//frameSize = 800</span>
+
+        <span class="s0">this</span><span class="s1">.setTitle(</span><span class="s3">&quot;2021F CS102A Project Reversi&quot;</span><span class="s1">);</span>
+        <span class="s0">this</span><span class="s1">.setLayout(</span><span class="s0">null</span><span class="s1">);</span>
+
+        <span class="s1">ImageIcon imageIcon = </span><span class="s0">new </span><span class="s1">ImageIcon(</span><span class="s3">&quot;C:</span><span class="s4">\\</span><span class="s3">Users</span><span class="s4">\\</span><span class="s3">20694</span><span class="s4">\\</span><span class="s3">IdeaProjects</span><span class="s4">\\</span><span class="s3">untitled</span><span class="s4">\\</span><span class="s3">Project</span><span class="s4">\\</span><span class="s3">src</span><span class="s4">\\</span><span class="s3">233.jpg&quot;</span><span class="s1">);</span>
+        <span class="s1">JLabel label = </span><span class="s0">new </span><span class="s1">JLabel(imageIcon);</span>
+        <span class="s1">label.setBounds(</span><span class="s5">0</span><span class="s1">, </span><span class="s5">0</span><span class="s1">, frameSize, frameSize);</span>
+        <span class="s0">this</span><span class="s1">.getLayeredPane().add(label, </span><span class="s0">new </span><span class="s1">Integer(Integer.MIN_VALUE));</span>
+        <span class="s1">JPanel j = (JPanel) </span><span class="s0">this</span><span class="s1">.getContentPane();</span>
+        <span class="s1">j.setOpaque(</span><span class="s0">false</span><span class="s1">);</span>
+
+        <span class="s2">//获取窗口边框的长度，将这些值加到主窗口大小上，这能使窗口大小和预期相符</span>
+        <span class="s1">Insets inset = </span><span class="s0">this</span><span class="s1">.getInsets();</span>
+        <span class="s0">this</span><span class="s1">.setSize(frameSize + inset.left + inset.right, frameSize + inset.top + inset.bottom);</span>
+
+        <span class="s0">this</span><span class="s1">.setLocationRelativeTo(</span><span class="s0">null</span><span class="s1">);</span>
+
+        <span class="s1">chessBoardPanel = </span><span class="s0">new </span><span class="s1">ChessBoardPanel((</span><span class="s0">int</span><span class="s1">) (</span><span class="s0">this</span><span class="s1">.getWidth() * </span><span class="s5">0.8</span><span class="s1">), (</span><span class="s0">int</span><span class="s1">) (</span><span class="s0">this</span><span class="s1">.getHeight() * </span><span class="s5">0.7</span><span class="s1">));</span>
+        <span class="s1">chessBoardPanel.setLocation((</span><span class="s0">this</span><span class="s1">.getWidth() - chessBoardPanel.getWidth()) / </span><span class="s5">2</span><span class="s1">, (</span><span class="s0">this</span><span class="s1">.getHeight() - chessBoardPanel.getHeight()) / </span><span class="s5">3</span><span class="s1">);</span>
+<span class="s2">//80,</span>
+        <span class="s1">statusPanel = </span><span class="s0">new </span><span class="s1">StatusPanel((</span><span class="s0">int</span><span class="s1">) (</span><span class="s0">this</span><span class="s1">.getWidth() * </span><span class="s5">0.8</span><span class="s1">), (</span><span class="s0">int</span><span class="s1">) (</span><span class="s0">this</span><span class="s1">.getHeight() * </span><span class="s5">0.1</span><span class="s1">));</span>
+        <span class="s1">statusPanel.setLocation((</span><span class="s0">this</span><span class="s1">.getWidth() - chessBoardPanel.getWidth()) / </span><span class="s5">2</span><span class="s1">, </span><span class="s5">0</span><span class="s1">);</span>
+        <span class="s0">if </span><span class="s1">(StartFrame.a == </span><span class="s5">0</span><span class="s1">) {</span>
+            <span class="s1">controller = </span><span class="s0">new </span><span class="s1">GameController(chessBoardPanel, statusPanel);</span>
+        <span class="s1">} </span><span class="s0">else if </span><span class="s1">(StartFrame.a == </span><span class="s5">1</span><span class="s1">) {</span>
+            <span class="s1">controller = </span><span class="s0">new </span><span class="s1">GameControllerAIr(chessBoardPanel, statusPanel);</span>
+        <span class="s1">} </span><span class="s0">else if </span><span class="s1">(StartFrame.a == </span><span class="s5">2</span><span class="s1">) {</span>
+            <span class="s1">controller = </span><span class="s0">new </span><span class="s1">GameControllerAIs(chessBoardPanel, statusPanel);</span>
+        <span class="s1">}</span>
+        <span class="s1">controller.setGamePanel(chessBoardPanel);</span>
+
+        <span class="s0">this</span><span class="s1">.add(chessBoardPanel);</span>
+        <span class="s0">this</span><span class="s1">.add(statusPanel);</span>
+        <span class="s1">Font font = </span><span class="s0">new </span><span class="s1">Font(</span><span class="s3">&quot;Script MT Bold&quot;</span><span class="s1">, Font.PLAIN, </span><span class="s5">40</span><span class="s1">);</span>
+        <span class="s1">chessBoardPanel.getGridAt(</span><span class="s5">0</span><span class="s1">,</span><span class="s5">0</span><span class="s1">).next();</span>
+
+        <span class="s1">JButton restartBtn = </span><span class="s0">new </span><span class="s1">JButton(</span><span class="s3">&quot;Restart&quot;</span><span class="s1">);</span>
+        <span class="s1">restartBtn.setSize(</span><span class="s5">120</span><span class="s1">, </span><span class="s5">50</span><span class="s1">);</span>
+        <span class="s1">restartBtn.setLocation((</span><span class="s0">this</span><span class="s1">.getWidth() - chessBoardPanel.getWidth()) / </span><span class="s5">2</span><span class="s1">, (</span><span class="s0">this</span><span class="s1">.getHeight() + chessBoardPanel.getHeight()) / </span><span class="s5">2</span><span class="s1">);</span>
+        <span class="s1">restartBtn.setContentAreaFilled(</span><span class="s0">false</span><span class="s1">);</span>
+        <span class="s1">restartBtn.setFont(font);</span>
+        <span class="s1">restartBtn.setForeground(Color.white);</span>
+        <span class="s1">add(restartBtn);</span>
+        <span class="s1">restartBtn.addActionListener(e -&gt; {</span>
+            <span class="s1">chessBoardPanel.resetChessGrids();</span>
+            <span class="s1">controller.resetStatusPanel();</span>
+            <span class="s1">StatusPanel.playerLabel.setForeground(Color.BLACK);</span>
+            <span class="s1">controller.StepList.clear();</span>
+            <span class="s1">chessBoardPanel.getGridAt(</span><span class="s5">0</span><span class="s1">,</span><span class="s5">0</span><span class="s1">).cancelNext();</span>
+            <span class="s1">chessBoardPanel.getGridAt(</span><span class="s5">0</span><span class="s1">,</span><span class="s5">0</span><span class="s1">).next();</span>
+        <span class="s1">});</span>
+        <span class="s2">//2.1new</span>
+        <span class="s1">JButton CheatButton = </span><span class="s0">new </span><span class="s1">JButton(</span><span class="s3">&quot;Cheat&quot;</span><span class="s1">);</span>
+        <span class="s1">CheatButton.setSize(</span><span class="s5">120</span><span class="s1">, </span><span class="s5">60</span><span class="s1">);</span>
+        <span class="s1">CheatButton.setLocation(restartBtn.getX() - </span><span class="s5">121</span><span class="s1">, restartBtn.getY() - </span><span class="s5">400</span><span class="s1">);</span>
+        <span class="s1">CheatButton.setContentAreaFilled(</span><span class="s0">false</span><span class="s1">);</span>
+        <span class="s1">CheatButton.setFont(</span><span class="s0">new </span><span class="s1">Font(</span><span class="s3">&quot;Script MT Bold&quot;</span><span class="s1">, Font.BOLD, </span><span class="s5">25</span><span class="s1">));</span>
+        <span class="s1">CheatButton.setForeground(Color.white);</span>
+        <span class="s1">add(CheatButton);</span>
+        <span class="s1">CheatButton.addActionListener(e -&gt; {</span>
+            <span class="s1">controller.openCheatMod();</span>
+        <span class="s1">});</span>
+        <span class="s2">//2.1</span>
+        <span class="s1">JButton CancelButton = </span><span class="s0">new </span><span class="s1">JButton(</span><span class="s3">&quot;Cancel&quot;</span><span class="s1">);</span>
+        <span class="s1">CancelButton.setSize(</span><span class="s5">120</span><span class="s1">, </span><span class="s5">60</span><span class="s1">);</span>
+        <span class="s1">CancelButton.setLocation(restartBtn.getX() - </span><span class="s5">121</span><span class="s1">, restartBtn.getY() - </span><span class="s5">290</span><span class="s1">);</span>
+        <span class="s1">CancelButton.setContentAreaFilled(</span><span class="s0">false</span><span class="s1">);</span>
+        <span class="s1">CancelButton.setFont(</span><span class="s0">new </span><span class="s1">Font(</span><span class="s3">&quot;Script MT Bold&quot;</span><span class="s1">, Font.BOLD, </span><span class="s5">25</span><span class="s1">));</span>
+        <span class="s1">CancelButton.setForeground(Color.white);</span>
+        <span class="s1">add(CancelButton);</span>
+        <span class="s1">CancelButton.addActionListener(e -&gt; {</span>
+            <span class="s1">controller.closeCheatMod();</span>
+        <span class="s1">});</span>
+
+        <span class="s1">JButton loadGameBtn = </span><span class="s0">new </span><span class="s1">JButton(</span><span class="s3">&quot;LoadGame&quot;</span><span class="s1">);</span>
+        <span class="s1">loadGameBtn.setSize(</span><span class="s5">120</span><span class="s1">, </span><span class="s5">50</span><span class="s1">);</span>
+        <span class="s1">loadGameBtn.setLocation(restartBtn.getX() + restartBtn.getWidth() + </span><span class="s5">30</span><span class="s1">, restartBtn.getY());</span>
+        <span class="s1">loadGameBtn.setContentAreaFilled(</span><span class="s0">false</span><span class="s1">);</span>
+        <span class="s1">loadGameBtn.setForeground(Color.white);</span>
+        <span class="s1">loadGameBtn.setFont(</span><span class="s0">new </span><span class="s1">Font(</span><span class="s3">&quot;Script MT Bold&quot;</span><span class="s1">, Font.BOLD, </span><span class="s5">25</span><span class="s1">));</span>
+        <span class="s1">add(loadGameBtn);</span>
+        <span class="s0">if </span><span class="s1">(StartFrame.a == </span><span class="s5">0</span><span class="s1">) {</span>
+            <span class="s1">loadGameBtn.addActionListener(e -&gt; {</span>
+                <span class="s2">//System.out.println(&quot;clicked Load Btn&quot;);</span>
+                <span class="s1">String filePath = JOptionPane.showInputDialog(</span><span class="s3">&quot;input the path here&quot;</span><span class="s1">);</span>
+                <span class="s1">List&lt;Step&gt; steps = controller.readFileData(filePath);</span>
+                <span class="s1">chessBoardPanel.resetChessGrids();</span>
+                <span class="s1">chessBoardPanel.getGridAt(</span><span class="s5">0</span><span class="s1">,</span><span class="s5">0</span><span class="s1">).cancelNext();</span>
+                <span class="s0">for </span><span class="s1">(Step s : steps) {</span>
+                    <span class="s0">if </span><span class="s1">(!chessBoardPanel.canClickGrid(s.getRowIndex(), s.getColumnIndex(), s.getChessPiece())) {</span>
+                        <span class="s1">JOptionPane.showMessageDialog(</span><span class="s0">null</span><span class="s1">, </span><span class="s3">&quot;ERROR 105&quot; </span><span class="s1">+ </span><span class="s3">&quot;</span><span class="s4">\n</span><span class="s3">&quot; </span><span class="s1">+ </span><span class="s3">&quot;This Step&quot; </span><span class="s1">+ </span><span class="s3">&quot;(&quot; </span><span class="s1">+ s.getRowIndex() + </span><span class="s3">&quot;,&quot; </span><span class="s1">+ s.getColumnIndex() + </span><span class="s3">&quot;)&quot; </span><span class="s1">+ </span><span class="s3">&quot; is Invalid&quot;</span><span class="s1">, </span><span class="s3">&quot;WARNING&quot;</span><span class="s1">, JOptionPane.WARNING_MESSAGE);</span>
+                    <span class="s1">}</span>
+                    <span class="s1">chessBoardPanel.getGridAt(s.getRowIndex(), s.getColumnIndex()).regret(s.getChessPiece());</span>
+                <span class="s1">}</span>
+                <span class="s1">controller.countScore();</span>
+            <span class="s1">});</span>
+        <span class="s1">}</span><span class="s0">else</span><span class="s1">{</span>
+            <span class="s1">loadGameBtn.addActionListener(e -&gt; {</span>
+                <span class="s2">//System.out.println(&quot;clicked Load Btn&quot;);</span>
+                <span class="s1">String filePath = JOptionPane.showInputDialog(</span><span class="s3">&quot;input the path here&quot;</span><span class="s1">);</span>
+                <span class="s1">List&lt;Step&gt; steps = controller.readFileData(filePath);</span>
+                <span class="s1">chessBoardPanel.resetChessGrids();</span>
+                <span class="s1">controller.setCanAct(</span><span class="s0">false</span><span class="s1">);</span>
+                <span class="s0">for </span><span class="s1">(Step s : steps) {</span>
+                    <span class="s0">if </span><span class="s1">(!chessBoardPanel.canClickGrid(s.getRowIndex(), s.getColumnIndex(), s.getChessPiece())) {</span>
+                        <span class="s1">JOptionPane.showMessageDialog(</span><span class="s0">null</span><span class="s1">, </span><span class="s3">&quot;ERROR 105&quot; </span><span class="s1">+ </span><span class="s3">&quot;</span><span class="s4">\n</span><span class="s3">&quot; </span><span class="s1">+ </span><span class="s3">&quot;This Step&quot; </span><span class="s1">+ </span><span class="s3">&quot;(&quot; </span><span class="s1">+ s.getRowIndex() + </span><span class="s3">&quot;,&quot; </span><span class="s1">+ s.getColumnIndex() + </span><span class="s3">&quot;)&quot; </span><span class="s1">+ </span><span class="s3">&quot; is Invalid&quot;</span><span class="s1">, </span><span class="s3">&quot;WARNING&quot;</span><span class="s1">, JOptionPane.WARNING_MESSAGE);</span>
+                    <span class="s1">}</span>
+                    <span class="s1">chessBoardPanel.getGridAt(s.getRowIndex(), s.getColumnIndex()).regret(s.getChessPiece());</span>
+                <span class="s1">}</span>
+                <span class="s1">controller.countScore();</span>
+                <span class="s1">controller.setCanAct(</span><span class="s0">true</span><span class="s1">);</span>
+                <span class="s1">chessBoardPanel.getGridAt(</span><span class="s5">0</span><span class="s1">,</span><span class="s5">0</span><span class="s1">).next();</span>
+            <span class="s1">});</span>
+        <span class="s1">}</span>
+
+        <span class="s1">JButton saveGameBtn = </span><span class="s0">new </span><span class="s1">JButton(</span><span class="s3">&quot;SaveGame&quot;</span><span class="s1">);</span>
+        <span class="s1">saveGameBtn.setSize(</span><span class="s5">120</span><span class="s1">, </span><span class="s5">50</span><span class="s1">);</span>
+        <span class="s1">saveGameBtn.setLocation(loadGameBtn.getX() + restartBtn.getWidth() + </span><span class="s5">30</span><span class="s1">, restartBtn.getY());</span>
+        <span class="s1">saveGameBtn.setContentAreaFilled(</span><span class="s0">false</span><span class="s1">);</span>
+        <span class="s1">saveGameBtn.setFont(</span><span class="s0">new </span><span class="s1">Font(</span><span class="s3">&quot;Script MT Bold&quot;</span><span class="s1">, Font.BOLD, </span><span class="s5">25</span><span class="s1">));</span>
+        <span class="s1">saveGameBtn.setForeground(Color.white);</span>
+        <span class="s1">add(saveGameBtn);</span>
+        <span class="s1">saveGameBtn.addActionListener(e -&gt; {</span>
+            <span class="s2">//System.out.println(&quot;clicked Save Btn&quot;);</span>
+            <span class="s1">String filePath = JOptionPane.showInputDialog(</span><span class="s0">this</span><span class="s1">, </span><span class="s3">&quot;input the path here&quot;</span><span class="s1">);</span>
+            <span class="s1">controller.writeDataToFile(filePath);</span>
+        <span class="s1">});</span>
+
+        <span class="s1">JButton regretButton = </span><span class="s0">new </span><span class="s1">JButton(</span><span class="s3">&quot;Regret&quot;</span><span class="s1">);</span>
+        <span class="s1">regretButton.setSize(</span><span class="s5">120</span><span class="s1">, </span><span class="s5">60</span><span class="s1">);</span>
+        <span class="s1">regretButton.setLocation(restartBtn.getX() - </span><span class="s5">156</span><span class="s1">, restartBtn.getY() - </span><span class="s5">550</span><span class="s1">);</span>
+        <span class="s1">regretButton.setContentAreaFilled(</span><span class="s0">false</span><span class="s1">);</span>
+        <span class="s1">regretButton.setFont(</span><span class="s0">new </span><span class="s1">Font(</span><span class="s3">&quot;Script MT Bold&quot;</span><span class="s1">, Font.BOLD, </span><span class="s5">25</span><span class="s1">));</span>
+        <span class="s1">regretButton.setForeground(Color.white);</span>
+        <span class="s1">add(regretButton);</span>
+        <span class="s0">if </span><span class="s1">(StartFrame.a == </span><span class="s5">0</span><span class="s1">) {</span>
+            <span class="s1">regretButton.addActionListener(e -&gt; {</span>
+                <span class="s0">if </span><span class="s1">(controller.StepList.size() == </span><span class="s5">0</span><span class="s1">) {</span>
+                    <span class="s1">JOptionPane.showMessageDialog(</span><span class="s0">null</span><span class="s1">, </span><span class="s3">&quot;You Can't Regret More&quot;</span><span class="s1">, </span><span class="s3">&quot;WARNING&quot;</span><span class="s1">, JOptionPane.WARNING_MESSAGE);</span>
+                <span class="s1">}</span>
+                <span class="s1">controller.StepList.remove(controller.StepList.size() - </span><span class="s5">1</span><span class="s1">);</span>
+               <span class="s2">// System.out.println(controller.StepList);</span>
+                <span class="s1">chessBoardPanel.resetChessGrids();</span>
+                <span class="s1">controller.resetStatusPanel();</span>
+                <span class="s1">chessBoardPanel.getGridAt(</span><span class="s5">0</span><span class="s1">,</span><span class="s5">0</span><span class="s1">).cancelNext();</span>
+                <span class="s0">for </span><span class="s1">(Step s : controller.StepList) {</span>
+                    <span class="s1">chessBoardPanel.getGridAt(s.getRowIndex(), s.getColumnIndex()).regret(s.getChessPiece());</span>
+                    <span class="s1">repaint();</span>
+                <span class="s1">}</span>
+                <span class="s1">chessBoardPanel.getGridAt(</span><span class="s5">0</span><span class="s1">,</span><span class="s5">0</span><span class="s1">).next();</span>
+            <span class="s1">});</span>
+        <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+            <span class="s1">regretButton.addActionListener(e -&gt; {</span>
+                <span class="s0">if </span><span class="s1">(controller.StepList.size() == </span><span class="s5">0</span><span class="s1">) {</span>
+                    <span class="s1">JOptionPane.showMessageDialog(</span><span class="s0">null</span><span class="s1">, </span><span class="s3">&quot;You Can't Regret More&quot;</span><span class="s1">, </span><span class="s3">&quot;WARNING&quot;</span><span class="s1">, JOptionPane.WARNING_MESSAGE);</span>
+                <span class="s1">}</span>
+                <span class="s1">controller.StepList.remove(controller.StepList.size() - </span><span class="s5">1</span><span class="s1">);</span>
+                <span class="s1">controller.StepList.remove(controller.StepList.size() - </span><span class="s5">1</span><span class="s1">);</span>
+                <span class="s1">controller.changePlayer();</span>
+                <span class="s1">chessBoardPanel.resetChessGrids();</span>
+                <span class="s1">controller.resetStatusPanel();</span>
+                <span class="s1">chessBoardPanel.getGridAt(</span><span class="s5">0</span><span class="s1">,</span><span class="s5">0</span><span class="s1">).cancelNext();</span>
+                <span class="s0">for </span><span class="s1">(Step s : controller.StepList) {</span>
+                    <span class="s1">chessBoardPanel.getGridAt(s.getRowIndex(), s.getColumnIndex()).regret(s.getChessPiece());</span>
+                    <span class="s1">repaint();</span>
+                    <span class="s2">//System.out.println(controller.StepList);</span>
+                <span class="s1">}</span>
+                <span class="s1">chessBoardPanel.getGridAt(</span><span class="s5">0</span><span class="s1">,</span><span class="s5">0</span><span class="s1">).next();</span>
+            <span class="s1">});</span>
+        <span class="s1">}</span>
+
+        <span class="s1">JButton Exit = </span><span class="s0">new </span><span class="s1">JButton(</span><span class="s3">&quot;MainMenu&quot;</span><span class="s1">);</span>
+        <span class="s1">Exit.setSize(</span><span class="s5">200</span><span class="s1">, </span><span class="s5">70</span><span class="s1">);</span>
+        <span class="s1">Exit.setLocation(</span><span class="s5">600</span><span class="s1">, </span><span class="s5">10</span><span class="s1">);</span>
+        <span class="s1">Exit.setContentAreaFilled(</span><span class="s0">false</span><span class="s1">);</span>
+        <span class="s1">Exit.setForeground(Color.white);</span>
+        <span class="s1">Exit.setFont(</span><span class="s0">new </span><span class="s1">Font(</span><span class="s3">&quot;Script MT Bold&quot;</span><span class="s1">, Font.BOLD, </span><span class="s5">33</span><span class="s1">));</span>
+        <span class="s1">add(Exit);</span>
+        <span class="s1">Exit.addActionListener(e -&gt; {</span>
+            <span class="s0">this</span><span class="s1">.setVisible(</span><span class="s0">false</span><span class="s1">);</span>
+            <span class="s1">StartFrame startFrame = </span><span class="s0">new </span><span class="s1">StartFrame(</span><span class="s3">&quot;Start&quot;</span><span class="s1">);</span>
+            <span class="s1">startFrame.setVisible(</span><span class="s0">true</span><span class="s1">);</span>
+        <span class="s1">});</span>
+
+        <span class="s0">this</span><span class="s1">.addComponentListener(</span><span class="s0">new </span><span class="s1">ComponentAdapter() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">componentResized(ComponentEvent e) {</span>
+                <span class="s0">super</span><span class="s1">.componentResized(e);</span>
+                <span class="s0">int </span><span class="s1">width = getWidth();</span>
+                <span class="s0">int </span><span class="s1">height = getHeight();</span>
+                <span class="s1">restartBtn.setBounds((</span><span class="s0">int</span><span class="s1">) ((width - chessBoardPanel.getWidth()) / </span><span class="s5">2</span><span class="s1">), (</span><span class="s0">int</span><span class="s1">) (height * </span><span class="s5">0.85</span><span class="s1">), </span><span class="s5">156</span><span class="s1">, </span><span class="s5">52</span><span class="s1">);</span>
+                <span class="s1">loadGameBtn.setBounds((restartBtn.getX() + </span><span class="s5">203</span><span class="s1">), (</span><span class="s0">int</span><span class="s1">) (height * </span><span class="s5">0.85</span><span class="s1">), </span><span class="s5">156</span><span class="s1">, </span><span class="s5">52</span><span class="s1">);</span>
+                <span class="s1">saveGameBtn.setBounds((loadGameBtn.getX() + </span><span class="s5">202</span><span class="s1">), (</span><span class="s0">int</span><span class="s1">) (height * </span><span class="s5">0.85</span><span class="s1">), </span><span class="s5">156</span><span class="s1">, </span><span class="s5">52</span><span class="s1">);</span>
+                <span class="s1">regretButton.setBounds(restartBtn.getX() - </span><span class="s5">120</span><span class="s1">, (</span><span class="s0">int</span><span class="s1">) (height * </span><span class="s5">0.22</span><span class="s1">), </span><span class="s5">120</span><span class="s1">, </span><span class="s5">60</span><span class="s1">);</span>
+                <span class="s1">CheatButton.setBounds(restartBtn.getX() - </span><span class="s5">120</span><span class="s1">, (</span><span class="s0">int</span><span class="s1">) (height * </span><span class="s5">0.35</span><span class="s1">), </span><span class="s5">120</span><span class="s1">, </span><span class="s5">60</span><span class="s1">);</span>
+                <span class="s1">CancelButton.setBounds(restartBtn.getX() - </span><span class="s5">120</span><span class="s1">, (</span><span class="s0">int</span><span class="s1">) (height * </span><span class="s5">0.48</span><span class="s1">), </span><span class="s5">120</span><span class="s1">, </span><span class="s5">60</span><span class="s1">);</span>
+                <span class="s1">Exit.setBounds(saveGameBtn.getX() + </span><span class="s5">75</span><span class="s1">, </span><span class="s5">10</span><span class="s1">, </span><span class="s5">200</span><span class="s1">, </span><span class="s5">70</span><span class="s1">);</span>
+                <span class="s1">chessBoardPanel.setLocation(((width - chessBoardPanel.getWidth()) / </span><span class="s5">2</span><span class="s1">), height / </span><span class="s5">8</span><span class="s1">);</span>
+                <span class="s1">statusPanel.setLocation(((width - chessBoardPanel.getWidth()) / </span><span class="s5">2</span><span class="s1">), </span><span class="s5">0</span><span class="s1">);</span>
+                <span class="s1">label.setLocation(((width - </span><span class="s5">800</span><span class="s1">) / </span><span class="s5">2</span><span class="s1">), </span><span class="s5">0</span><span class="s1">);</span>
+                <span class="s2">// chessBoardPanel.setGridSize(Math.min(width, height) / 8);</span>
+            <span class="s1">}</span>
+        <span class="s1">});</span>
+
+        <span class="s0">this</span><span class="s1">.setVisible(</span><span class="s0">true</span><span class="s1">);</span>
+        <span class="s0">this</span><span class="s1">.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);</span>
+    <span class="s1">}</span>
+<span class="s1">}</span>
+</pre>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<html>
+<head>
+<title>Step.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #0033b3;}
+.s1 { color: #080808;}
+.s2 { color: #067d17;}
+</style>
+</head>
+<body bgcolor="#ffffff">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#c0c0c0" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+Step.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">components;</span>
+
+<span class="s0">import </span><span class="s1">model.ChessPiece;</span>
+
+<span class="s0">import </span><span class="s1">java.awt.*;</span>
+
+<span class="s0">public class </span><span class="s1">Step {</span>
+    <span class="s0">private int </span><span class="s1">rowIndex;</span>
+    <span class="s0">private int </span><span class="s1">columnIndex;</span>
+    <span class="s0">private </span><span class="s1">ChessPiece chessPiece;</span>
+
+
+    <span class="s0">public </span><span class="s1">Step(</span><span class="s0">int </span><span class="s1">rowIndex, </span><span class="s0">int </span><span class="s1">columnIndex, ChessPiece chessPiece) {</span>
+        <span class="s1">setRowIndex(rowIndex);</span>
+        <span class="s1">setColumnIndex(columnIndex);</span>
+        <span class="s1">setChessPiece(chessPiece);</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public </span><span class="s1">ChessPiece getChessPiece() {</span>
+        <span class="s0">return </span><span class="s1">chessPiece;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public void </span><span class="s1">setChessPiece(ChessPiece chessPiece) {</span>
+        <span class="s0">this</span><span class="s1">.chessPiece = chessPiece;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public int </span><span class="s1">getRowIndex() {</span>
+        <span class="s0">return </span><span class="s1">rowIndex;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public int </span><span class="s1">getColumnIndex() {</span>
+        <span class="s0">return </span><span class="s1">columnIndex;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public void </span><span class="s1">setRowIndex(</span><span class="s0">int </span><span class="s1">rowIndex) {</span>
+        <span class="s0">this</span><span class="s1">.rowIndex = rowIndex;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public void </span><span class="s1">setColumnIndex(</span><span class="s0">int </span><span class="s1">columnIndex) {</span>
+        <span class="s0">this</span><span class="s1">.columnIndex = columnIndex;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public </span><span class="s1">String toString() {</span>
+        <span class="s0">return </span><span class="s1">String.format(</span><span class="s2">&quot;rowIndex: %d, columnIndex: %d, color: %s&quot;</span><span class="s1">,  getRowIndex(), getColumnIndex(), getChessPiece());</span>
+    <span class="s1">}</span>
+<span class="s1">}</span>
+</pre>
+</body>
+</html>

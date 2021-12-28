@@ -1,0 +1,158 @@
+<html>
+<head>
+<title>ChessGridComponent.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #0033b3;}
+.s1 { color: #080808;}
+.s2 { color: #1750eb;}
+.s3 { color: #8c8c8c; font-style: italic;}
+</style>
+</head>
+<body bgcolor="#ffffff">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#c0c0c0" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+ChessGridComponent.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">components;</span>
+
+<span class="s0">import </span><span class="s1">model.*;</span>
+<span class="s0">import </span><span class="s1">view.GameFrame;</span>
+
+
+<span class="s0">import </span><span class="s1">java.awt.*;</span>
+
+<span class="s0">public class </span><span class="s1">ChessGridComponent </span><span class="s0">extends </span><span class="s1">BasicComponent {</span>
+    <span class="s0">public static int </span><span class="s1">chessSize;</span>
+    <span class="s0">public static int </span><span class="s1">gridSize;</span>
+    <span class="s0">public static </span><span class="s1">Color gridColor = </span><span class="s0">new </span><span class="s1">Color(</span><span class="s2">211</span><span class="s1">, </span><span class="s2">211</span><span class="s1">, </span><span class="s2">211</span><span class="s1">);</span>
+
+    <span class="s0">private </span><span class="s1">ChessPiece chessPiece;</span>
+    <span class="s0">private </span><span class="s1">BLUE blue;</span>
+    <span class="s0">private int </span><span class="s1">row;</span>
+    <span class="s0">private int </span><span class="s1">col;</span>
+
+    <span class="s0">public </span><span class="s1">ChessGridComponent(</span><span class="s0">int </span><span class="s1">row, </span><span class="s0">int </span><span class="s1">col) {</span>
+        <span class="s0">this</span><span class="s1">.setSize(gridSize, gridSize);</span>
+        <span class="s0">this</span><span class="s1">.row = row;</span>
+        <span class="s0">this</span><span class="s1">.col = col;</span>
+    <span class="s1">}</span>
+
+
+    <span class="s0">public void </span><span class="s1">setBlue(BLUE blue) {</span>
+        <span class="s0">this</span><span class="s1">.blue = blue;</span>
+    <span class="s1">}</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">public void </span><span class="s1">onMouseClicked() {</span>
+        <span class="s3">//System.out.printf(&quot;%s clicked (%d, %d)\n&quot;, GameFrame.controller.getCurrentPlayer(), row, col);</span>
+
+        <span class="s3">//todo: complete mouse click method</span>
+        <span class="s0">if </span><span class="s1">(GameFrame.controller.canClick(row, col)) {</span>
+            <span class="s0">if </span><span class="s1">(</span><span class="s0">this</span><span class="s1">.chessPiece == </span><span class="s0">null</span><span class="s1">) {</span>
+                <span class="s1">cancelNext();</span>
+                <span class="s0">this</span><span class="s1">.chessPiece = GameFrame.controller.getCurrentPlayer();</span>
+                <span class="s1">GameFrame.controller.flipChessPieces(row, col);</span>
+                <span class="s1">Step step = </span><span class="s0">new </span><span class="s1">Step(row, col, chessPiece);</span>
+                <span class="s1">GameFrame.controller.StepList.add(step);</span>
+                <span class="s1">GameFrame.controller.swapPlayer();</span>
+                <span class="s1">next();</span>
+                <span class="s3">//System.out.println(GameFrame.controller.StepList);</span>
+            <span class="s1">}</span>
+            <span class="s1">repaint();</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public void </span><span class="s1">regret(ChessPiece chessPiece) {</span>
+        <span class="s1">cancelNext();</span>
+        <span class="s1">GameFrame.controller.setCanAct(</span><span class="s0">false</span><span class="s1">);</span>
+        <span class="s0">this</span><span class="s1">.chessPiece = chessPiece;</span>
+        <span class="s1">GameFrame.controller.flipChessPieces(row, col);</span>
+        <span class="s1">GameFrame.controller.swapPlayer();</span>
+        <span class="s3">//System.out.println(row + &quot; &quot; + col);</span>
+        <span class="s1">GameFrame.controller.setCanAct(</span><span class="s0">true</span><span class="s1">);</span>
+        <span class="s1">next();</span>
+        <span class="s1">repaint();</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public void </span><span class="s1">next() {</span>
+        <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">i = </span><span class="s2">0</span><span class="s1">; i &lt; </span><span class="s2">8</span><span class="s1">; i++) {</span>
+            <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">j = </span><span class="s2">0</span><span class="s1">; j &lt; </span><span class="s2">8</span><span class="s1">; j++) {</span>
+                <span class="s0">if </span><span class="s1">(GameFrame.controller.getGamePanel().chessGrids[i][j].getChessPiece() == </span><span class="s0">null</span><span class="s1">) {</span>
+                    <span class="s0">if </span><span class="s1">(GameFrame.controller.getGamePanel().canClickGrid(i, j, GameFrame.controller.getCurrentPlayer())) {</span>
+                        <span class="s1">GameFrame.controller.getGamePanel().chessGrids[i][j].setBlue(BLUE.BLUE);</span>
+                        <span class="s1">GameFrame.controller.getGamePanel().chessGrids[i][j].repaint();</span>
+                    <span class="s1">}</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public void </span><span class="s1">cancelNext() {</span>
+        <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">i = </span><span class="s2">0</span><span class="s1">; i &lt; </span><span class="s2">8</span><span class="s1">; i++) {</span>
+            <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">j = </span><span class="s2">0</span><span class="s1">; j &lt; </span><span class="s2">8</span><span class="s1">; j++) {</span>
+                <span class="s0">if </span><span class="s1">(GameFrame.controller.getGamePanel().chessGrids[i][j].blue == BLUE.BLUE) {</span>
+                    <span class="s1">GameFrame.controller.getGamePanel().chessGrids[i][j].setBlue(</span><span class="s0">null</span><span class="s1">);</span>
+                    <span class="s1">GameFrame.controller.getGamePanel().chessGrids[i][j].repaint();</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public </span><span class="s1">ChessPiece getChessPiece() {</span>
+        <span class="s0">return </span><span class="s1">chessPiece;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public void </span><span class="s1">setChessPiece(ChessPiece chessPiece) {</span>
+        <span class="s0">this</span><span class="s1">.chessPiece = chessPiece;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public int </span><span class="s1">getRow() {</span>
+        <span class="s0">return </span><span class="s1">row;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public int </span><span class="s1">getCol() {</span>
+        <span class="s0">return </span><span class="s1">col;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public void </span><span class="s1">drawBLUE(Graphics g) {</span>
+        <span class="s1">Graphics2D graphics2D = (Graphics2D) g;</span>
+        <span class="s1">graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, </span><span class="s2">1.0f</span><span class="s1">));</span>
+        <span class="s3">//g.fillRect(1, 1, this.getWidth() - 2, this.getHeight() - 2);</span>
+        <span class="s0">if </span><span class="s1">(</span><span class="s0">this</span><span class="s1">.blue == BLUE.BLUE) {</span>
+            <span class="s1">g.setColor(BLUE.BLUE.getBLUE());</span>
+            <span class="s1">g.fillOval((</span><span class="s0">int</span><span class="s1">) (gridSize / </span><span class="s2">2.65</span><span class="s1">), (</span><span class="s0">int</span><span class="s1">) (gridSize / </span><span class="s2">2.55</span><span class="s1">), chessSize / </span><span class="s2">3</span><span class="s1">, chessSize / </span><span class="s2">3</span><span class="s1">);</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public void </span><span class="s1">drawPiece(Graphics g) {</span>
+        <span class="s1">Graphics2D graphics2D = (Graphics2D) g;</span>
+        <span class="s1">graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, </span><span class="s2">0.7f</span><span class="s1">));</span>
+        <span class="s1">g.setColor(gridColor);</span>
+        <span class="s1">g.fillRect(</span><span class="s2">1</span><span class="s1">, </span><span class="s2">1</span><span class="s1">, </span><span class="s0">this</span><span class="s1">.getWidth() - </span><span class="s2">2</span><span class="s1">, </span><span class="s0">this</span><span class="s1">.getHeight() - </span><span class="s2">2</span><span class="s1">);</span>
+        <span class="s0">if </span><span class="s1">(</span><span class="s0">this</span><span class="s1">.chessPiece != </span><span class="s0">null</span><span class="s1">) {</span>
+            <span class="s1">g.setColor(chessPiece.getColor());</span>
+            <span class="s1">g.fillOval((gridSize - chessSize) / </span><span class="s2">2</span><span class="s1">, (gridSize - chessSize) / </span><span class="s2">2</span><span class="s1">, chessSize, chessSize);</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">public void </span><span class="s1">paintComponent(Graphics g) {</span>
+        <span class="s0">super</span><span class="s1">.paintComponents(g);</span>
+        <span class="s1">drawBLUE(g);</span>
+        <span class="s1">drawPiece(g);</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public void </span><span class="s1">AIStep(ChessPiece chessPiece) {</span>
+        <span class="s0">this</span><span class="s1">.chessPiece = GameFrame.controller.getCurrentPlayer();</span>
+        <span class="s1">GameFrame.controller.flipChessPieces(row, col);</span>
+        <span class="s1">Step step = </span><span class="s0">new </span><span class="s1">Step(row, col, chessPiece);</span>
+        <span class="s1">GameFrame.controller.StepList.add(step);</span>
+        <span class="s3">//System.out.println(GameFrame.controller.StepList);</span>
+        <span class="s1">repaint();</span>
+    <span class="s1">}</span><span class="s3">//3.0</span>
+<span class="s1">}</span>
+</pre>
+</body>
+</html>

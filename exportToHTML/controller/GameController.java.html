@@ -1,0 +1,326 @@
+<html>
+<head>
+<title>GameController.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #0033b3;}
+.s1 { color: #080808;}
+.s2 { color: #1750eb;}
+.s3 { color: #8c8c8c; font-style: italic;}
+.s4 { color: #067d17;}
+.s5 { color: #0037a6;}
+</style>
+</head>
+<body bgcolor="#ffffff">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#c0c0c0" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+GameController.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">controller;</span>
+
+<span class="s0">import </span><span class="s1">components.ChessGridComponent;</span>
+<span class="s0">import </span><span class="s1">components.Step;</span>
+<span class="s0">import </span><span class="s1">model.ChessPiece;</span>
+<span class="s0">import </span><span class="s1">view.ChessBoardPanel;</span>
+<span class="s0">import </span><span class="s1">view.GameFrame;</span>
+<span class="s0">import </span><span class="s1">view.StatusPanel;</span>
+
+<span class="s0">import </span><span class="s1">javax.swing.*;</span>
+<span class="s0">import </span><span class="s1">java.awt.*;</span>
+<span class="s0">import </span><span class="s1">java.io.*;</span>
+<span class="s0">import </span><span class="s1">java.net.URLConnection;</span>
+<span class="s0">import </span><span class="s1">java.util.ArrayList;</span>
+<span class="s0">import </span><span class="s1">java.util.List;</span>
+
+
+<span class="s0">public class </span><span class="s1">GameController {</span>
+
+
+    <span class="s1">ChessBoardPanel gamePanel;</span>
+    <span class="s1">StatusPanel statusPanel;</span>
+    <span class="s1">ChessPiece currentPlayer;</span>
+    <span class="s0">int </span><span class="s1">blackScore;</span>
+    <span class="s0">int </span><span class="s1">whiteScore;</span>
+    <span class="s0">int </span><span class="s1">cantActCount = </span><span class="s2">0</span><span class="s1">;</span>
+    <span class="s0">boolean </span><span class="s1">cheatSwitch = </span><span class="s0">false</span><span class="s1">;</span>
+    <span class="s0">public </span><span class="s1">ArrayList&lt;String&gt; Steps = </span><span class="s0">new </span><span class="s1">ArrayList&lt;&gt;();</span>
+    <span class="s0">public </span><span class="s1">ArrayList&lt;Step&gt; StepList = </span><span class="s0">new </span><span class="s1">ArrayList&lt;&gt;();</span><span class="s3">//2.0</span>
+    <span class="s0">boolean </span><span class="s1">CanAct = </span><span class="s0">true</span><span class="s1">;</span><span class="s3">//3.1</span>
+
+    <span class="s0">public void </span><span class="s1">setCanAct(</span><span class="s0">boolean </span><span class="s1">canAct) {</span>
+        <span class="s1">CanAct = canAct;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public </span><span class="s1">GameController(ChessBoardPanel gamePanel, StatusPanel statusPanel) {</span>
+        <span class="s0">this</span><span class="s1">.gamePanel = gamePanel;</span>
+        <span class="s0">this</span><span class="s1">.statusPanel = statusPanel;</span>
+        <span class="s0">this</span><span class="s1">.currentPlayer = ChessPiece.BLACK;</span>
+
+        <span class="s1">blackScore = </span><span class="s2">2</span><span class="s1">;</span>
+        <span class="s1">whiteScore = </span><span class="s2">2</span><span class="s1">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public void </span><span class="s1">openCheatMod() {</span>
+        <span class="s1">cheatSwitch = </span><span class="s0">true</span><span class="s1">;</span>
+    <span class="s1">}</span><span class="s3">//2.1</span>
+
+    <span class="s0">public void </span><span class="s1">closeCheatMod() {</span>
+        <span class="s1">cheatSwitch = </span><span class="s0">false</span><span class="s1">;</span>
+    <span class="s1">}</span><span class="s3">//2.1</span>
+
+    <span class="s0">public void </span><span class="s1">changePlayer(){</span>
+        <span class="s0">this</span><span class="s1">.currentPlayer = ChessPiece.BLACK;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public void </span><span class="s1">swapPlayer() {</span>
+        <span class="s1">blackScore = gamePanel.countBlack();</span>
+        <span class="s1">whiteScore = gamePanel.countWhite();</span>
+        <span class="s0">boolean </span><span class="s1">canAct = </span><span class="s0">false</span><span class="s1">;</span>
+        <span class="s1">currentPlayer = (currentPlayer == ChessPiece.BLACK) ? ChessPiece.WHITE : ChessPiece.BLACK;</span>
+        <span class="s0">if </span><span class="s1">(!cheatSwitch) {</span>
+            <span class="s0">for </span><span class="s1">(ChessGridComponent[] allCols : gamePanel.getChessGrids()) {</span>
+                <span class="s0">for </span><span class="s1">(ChessGridComponent allGrids : allCols) {</span>
+                    <span class="s0">if </span><span class="s1">(allGrids.getChessPiece() == </span><span class="s0">null </span><span class="s1">&amp;&amp; !(gamePanel.q7(allGrids.getRow(), allGrids.getCol(), currentPlayer) == </span><span class="s2">0 </span><span class="s1">&amp;&amp; gamePanel.w8(allGrids.getRow(), allGrids.getCol(), currentPlayer) == </span><span class="s2">0 </span><span class="s1">&amp;&amp; gamePanel.e9(allGrids.getRow(), allGrids.getCol(), currentPlayer) == </span><span class="s2">0 </span><span class="s1">&amp;&amp; gamePanel.d6(allGrids.getRow(), allGrids.getCol(), currentPlayer) == </span><span class="s2">0 </span><span class="s1">&amp;&amp; gamePanel.c3(allGrids.getRow(), allGrids.getCol(), currentPlayer) == </span><span class="s2">0 </span><span class="s1">&amp;&amp; gamePanel.x2(allGrids.getRow(), allGrids.getCol(), currentPlayer) == </span><span class="s2">0 </span><span class="s1">&amp;&amp; gamePanel.z1(allGrids.getRow(), allGrids.getCol(), currentPlayer) == </span><span class="s2">0 </span><span class="s1">&amp;&amp; gamePanel.a4(allGrids.getRow(), allGrids.getCol(), currentPlayer) == </span><span class="s2">0</span><span class="s1">)) {</span>
+                        <span class="s1">canAct = </span><span class="s0">true</span><span class="s1">;</span>
+                        <span class="s1">cantActCount = </span><span class="s2">0</span><span class="s1">;</span>
+                    <span class="s1">}</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+        <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+            <span class="s0">for </span><span class="s1">(ChessGridComponent[] allCols : gamePanel.getChessGrids()) {</span>
+                <span class="s0">for </span><span class="s1">(ChessGridComponent allGrids : allCols) {</span>
+                    <span class="s0">if </span><span class="s1">(allGrids.getChessPiece() == </span><span class="s0">null</span><span class="s1">) {</span>
+                        <span class="s1">canAct = </span><span class="s0">true</span><span class="s1">;</span>
+                        <span class="s1">cantActCount = </span><span class="s2">0</span><span class="s1">;</span>
+                        <span class="s0">break</span><span class="s1">;</span>
+                    <span class="s1">}</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+        <span class="s0">if </span><span class="s1">(!canAct &amp;&amp; cantActCount == </span><span class="s2">2</span><span class="s1">) isWin();</span>
+        <span class="s0">if </span><span class="s1">(!canAct &amp;&amp; cantActCount &lt; </span><span class="s2">2</span><span class="s1">) {</span>
+            <span class="s1">cantActCount++;</span>
+            <span class="s1">swapPlayer();</span>
+            <span class="s1">System.out.println(</span><span class="s4">&quot;swap player failed&quot;</span><span class="s1">);</span>
+        <span class="s1">}</span>
+        <span class="s0">if </span><span class="s1">(currentPlayer.name().equals(</span><span class="s4">&quot;BLACK&quot;</span><span class="s1">)) {</span>
+            <span class="s1">StatusPanel.playerLabel.setForeground(Color.BLACK);</span>
+        <span class="s1">} </span><span class="s0">else if </span><span class="s1">(currentPlayer.name().equals(</span><span class="s4">&quot;WHITE&quot;</span><span class="s1">)) {</span>
+            <span class="s1">StatusPanel.playerLabel.setForeground(Color.white);</span>
+        <span class="s1">}</span>
+        <span class="s1">statusPanel.setPlayerText(currentPlayer.name());</span>
+        <span class="s1">statusPanel.setScoreText(blackScore, whiteScore);</span>
+    <span class="s1">}</span><span class="s3">//2.1</span>
+
+    <span class="s0">public boolean </span><span class="s1">canClick(</span><span class="s0">int </span><span class="s1">row, </span><span class="s0">int </span><span class="s1">col) {</span>
+        <span class="s0">if </span><span class="s1">(cheatSwitch){</span>
+            <span class="s0">return </span><span class="s1">gamePanel.isEmpty(row, col);</span>
+        <span class="s1">}</span>
+        <span class="s0">else </span><span class="s1">{</span>
+            <span class="s0">return </span><span class="s1">gamePanel.canClickGrid(row, col, currentPlayer);</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span><span class="s3">//2.1</span>
+
+    <span class="s3">//2.0</span>
+
+    <span class="s0">public </span><span class="s1">ArrayList&lt;ChessGridComponent&gt; AvailableGrids() {</span>
+        <span class="s1">ArrayList&lt;ChessGridComponent&gt; Grids = </span><span class="s0">new </span><span class="s1">ArrayList&lt;&gt;();</span>
+        <span class="s0">for </span><span class="s1">(ChessGridComponent[] allCols : gamePanel.getChessGrids()) {</span>
+            <span class="s0">for </span><span class="s1">(ChessGridComponent allGrids : allCols) {</span>
+                <span class="s0">if </span><span class="s1">(allGrids.getChessPiece() == </span><span class="s0">null </span><span class="s1">&amp;&amp; !(gamePanel.q7(allGrids.getRow(), allGrids.getCol(), currentPlayer) == </span><span class="s2">0 </span><span class="s1">&amp;&amp; gamePanel.w8(allGrids.getRow(), allGrids.getCol(), currentPlayer) == </span><span class="s2">0 </span><span class="s1">&amp;&amp; gamePanel.e9(allGrids.getRow(), allGrids.getCol(), currentPlayer) == </span><span class="s2">0 </span><span class="s1">&amp;&amp; gamePanel.d6(allGrids.getRow(), allGrids.getCol(), currentPlayer) == </span><span class="s2">0 </span><span class="s1">&amp;&amp; gamePanel.c3(allGrids.getRow(), allGrids.getCol(), currentPlayer) == </span><span class="s2">0 </span><span class="s1">&amp;&amp; gamePanel.x2(allGrids.getRow(), allGrids.getCol(), currentPlayer) == </span><span class="s2">0 </span><span class="s1">&amp;&amp; gamePanel.z1(allGrids.getRow(), allGrids.getCol(), currentPlayer) == </span><span class="s2">0 </span><span class="s1">&amp;&amp; gamePanel.a4(allGrids.getRow(), allGrids.getCol(), currentPlayer) == </span><span class="s2">0</span><span class="s1">)) {</span>
+                    <span class="s1">Grids.add(allGrids);</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+        <span class="s3">//System.out.println(Grids);</span>
+        <span class="s0">return </span><span class="s1">Grids;</span>
+    <span class="s1">}</span>
+
+    <span class="s3">//new</span>
+    <span class="s0">public void </span><span class="s1">flipChessPieces(</span><span class="s0">int </span><span class="s1">row, </span><span class="s0">int </span><span class="s1">col) {</span>
+        <span class="s0">for </span><span class="s1">(ChessGridComponent pieces : gamePanel.w8ex(row, col, currentPlayer)) {</span>
+            <span class="s1">pieces.setChessPiece(currentPlayer);</span>
+            <span class="s1">pieces.repaint();</span>
+        <span class="s1">}</span>
+        <span class="s0">for </span><span class="s1">(ChessGridComponent pieces : gamePanel.d6ex(row, col, currentPlayer)) {</span>
+            <span class="s1">pieces.setChessPiece(currentPlayer);</span>
+            <span class="s1">pieces.repaint();</span>
+        <span class="s1">}</span>
+        <span class="s0">for </span><span class="s1">(ChessGridComponent pieces : gamePanel.x2ex(row, col, currentPlayer)) {</span>
+            <span class="s1">pieces.setChessPiece(currentPlayer);</span>
+            <span class="s1">pieces.repaint();</span>
+        <span class="s1">}</span>
+        <span class="s0">for </span><span class="s1">(ChessGridComponent pieces : gamePanel.a4ex(row, col, currentPlayer)) {</span>
+            <span class="s1">pieces.setChessPiece(currentPlayer);</span>
+            <span class="s1">pieces.repaint();</span>
+        <span class="s1">}</span>
+        <span class="s0">for </span><span class="s1">(ChessGridComponent pieces : gamePanel.q7ex(row, col, currentPlayer)) {</span>
+            <span class="s1">pieces.setChessPiece(currentPlayer);</span>
+            <span class="s1">pieces.repaint();</span>
+        <span class="s1">}</span>
+        <span class="s0">for </span><span class="s1">(ChessGridComponent pieces : gamePanel.e9ex(row, col, currentPlayer)) {</span>
+            <span class="s1">pieces.setChessPiece(currentPlayer);</span>
+            <span class="s1">pieces.repaint();</span>
+        <span class="s1">}</span>
+        <span class="s0">for </span><span class="s1">(ChessGridComponent pieces : gamePanel.c3ex(row, col, currentPlayer)) {</span>
+            <span class="s1">pieces.setChessPiece(currentPlayer);</span>
+            <span class="s1">pieces.repaint();</span>
+        <span class="s1">}</span>
+        <span class="s0">for </span><span class="s1">(ChessGridComponent pieces : gamePanel.z1ex(row, col, currentPlayer)) {</span>
+            <span class="s1">pieces.setChessPiece(currentPlayer);</span>
+            <span class="s1">pieces.repaint();</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s3">//new</span>
+    <span class="s0">public void </span><span class="s1">isWin() {</span>
+        <span class="s0">if </span><span class="s1">(blackScore &gt; whiteScore) {</span>
+            <span class="s1">JOptionPane.showMessageDialog(</span><span class="s0">null</span><span class="s1">, </span><span class="s4">&quot;Player BLACK WIN&quot;</span><span class="s1">, </span><span class="s4">&quot;Message&quot;</span><span class="s1">, JOptionPane.NO_OPTION);</span>
+        <span class="s1">} </span><span class="s0">else if </span><span class="s1">(blackScore &lt; whiteScore) {</span>
+            <span class="s1">JOptionPane.showMessageDialog(</span><span class="s0">null</span><span class="s1">, </span><span class="s4">&quot;Player WHITE WIN&quot;</span><span class="s1">, </span><span class="s4">&quot;Message&quot;</span><span class="s1">, JOptionPane.NO_OPTION);</span>
+        <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+            <span class="s1">JOptionPane.showMessageDialog(</span><span class="s0">null</span><span class="s1">, </span><span class="s4">&quot;DRAW&quot;</span><span class="s1">, </span><span class="s4">&quot;Message&quot;</span><span class="s1">, JOptionPane.NO_OPTION);</span>
+        <span class="s1">}</span>
+        <span class="s3">//System.exit(0);//需要修改</span>
+    <span class="s1">}</span>
+
+    <span class="s3">//new</span>
+    <span class="s0">public void </span><span class="s1">countScore() {</span>
+        <span class="s0">for </span><span class="s1">(ChessGridComponent[] allCols : gamePanel.getChessGrids()) {</span>
+            <span class="s0">for </span><span class="s1">(ChessGridComponent allGrids : allCols) {</span>
+                <span class="s0">if </span><span class="s1">(allGrids.getChessPiece() != </span><span class="s0">null</span><span class="s1">) {</span>
+                    <span class="s0">if </span><span class="s1">(allGrids.getChessPiece().getColor().equals(Color.BLACK)) blackScore++;</span>
+                    <span class="s0">else </span><span class="s1">whiteScore++;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+
+    <span class="s0">public </span><span class="s1">ChessPiece getCurrentPlayer() {</span>
+        <span class="s0">return </span><span class="s1">currentPlayer;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public </span><span class="s1">ChessBoardPanel getGamePanel() {</span>
+        <span class="s0">return </span><span class="s1">gamePanel;</span>
+    <span class="s1">}</span>
+
+
+    <span class="s0">public void </span><span class="s1">setGamePanel(ChessBoardPanel gamePanel) {</span>
+        <span class="s0">this</span><span class="s1">.gamePanel = gamePanel;</span>
+    <span class="s1">}</span>
+
+
+    <span class="s0">public </span><span class="s1">List&lt;Step&gt; readFileData(String fileName) {</span>
+        <span class="s3">//todo: read date from file</span>
+        <span class="s1">List&lt;String&gt; fileData = </span><span class="s0">new </span><span class="s1">ArrayList&lt;&gt;();</span>
+        <span class="s1">List&lt;String&gt; panelData = </span><span class="s0">new </span><span class="s1">ArrayList&lt;&gt;();</span>
+        <span class="s1">ArrayList&lt;Step&gt; steps = </span><span class="s0">new </span><span class="s1">ArrayList&lt;&gt;();</span>
+        <span class="s0">int</span><span class="s1">[][] ints = </span><span class="s0">new int</span><span class="s1">[</span><span class="s2">8</span><span class="s1">][</span><span class="s2">8</span><span class="s1">];</span>
+        <span class="s1">String filePath = </span><span class="s4">&quot;C:</span><span class="s5">\\</span><span class="s4">Users</span><span class="s5">\\</span><span class="s4">20694</span><span class="s5">\\</span><span class="s4">IdeaProjects</span><span class="s5">\\</span><span class="s4">untitled</span><span class="s5">\\</span><span class="s4">Project</span><span class="s5">\\</span><span class="s4">src</span><span class="s5">\\</span><span class="s4">&quot; </span><span class="s1">+ fileName;</span>
+        <span class="s1">String[] strings1 = fileName.split(</span><span class="s4">&quot;</span><span class="s5">\\</span><span class="s4">.&quot;</span><span class="s1">);</span>
+        <span class="s0">if </span><span class="s1">(!strings1[</span><span class="s2">1</span><span class="s1">].equals(</span><span class="s4">&quot;txt&quot;</span><span class="s1">)) {</span>
+            <span class="s1">JOptionPane.showMessageDialog(</span><span class="s0">null</span><span class="s1">, </span><span class="s4">&quot;ERROR 104&quot;</span><span class="s1">, </span><span class="s4">&quot;ERROR&quot;</span><span class="s1">, JOptionPane.WARNING_MESSAGE);</span>
+            <span class="s0">return null</span><span class="s1">;</span>
+        <span class="s1">}</span>
+        <span class="s0">try </span><span class="s1">{</span>
+            <span class="s1">File file = </span><span class="s0">new </span><span class="s1">File(filePath);</span>
+            <span class="s0">if </span><span class="s1">(!file.exists()){</span>
+                <span class="s1">JOptionPane.showMessageDialog(</span><span class="s0">null</span><span class="s1">,</span><span class="s4">&quot;ERROR 106&quot;</span><span class="s1">,</span><span class="s4">&quot;WARNING&quot;</span><span class="s1">,JOptionPane.WARNING_MESSAGE);</span>
+                <span class="s0">return null</span><span class="s1">;</span>
+            <span class="s1">}</span>
+            <span class="s1">FileReader fileReader = </span><span class="s0">new </span><span class="s1">FileReader(filePath);</span>
+            <span class="s1">BufferedReader bufferedReader = </span><span class="s0">new </span><span class="s1">BufferedReader(fileReader);</span>
+            <span class="s1">String line;</span>
+            <span class="s0">while </span><span class="s1">((line = bufferedReader.readLine()) != </span><span class="s0">null</span><span class="s1">) {</span>
+                <span class="s1">fileData.add(line);</span>
+            <span class="s1">}</span>
+            <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">i = </span><span class="s2">0</span><span class="s1">; i &lt; </span><span class="s2">8</span><span class="s1">; i++) {</span>
+                <span class="s1">String[] strings = fileData.get(</span><span class="s2">0</span><span class="s1">).split(</span><span class="s4">&quot; &quot;</span><span class="s1">);</span>
+                <span class="s0">if </span><span class="s1">(strings.length != </span><span class="s2">8</span><span class="s1">) {</span>
+                    <span class="s1">JOptionPane.showMessageDialog(</span><span class="s0">null</span><span class="s1">, </span><span class="s4">&quot;ERROR 101&quot;</span><span class="s1">, </span><span class="s4">&quot;ERROR&quot;</span><span class="s1">, JOptionPane.WARNING_MESSAGE);</span>
+                    <span class="s0">return null</span><span class="s1">;</span>
+                <span class="s1">}</span>
+                <span class="s1">panelData.add(fileData.get(</span><span class="s2">0</span><span class="s1">));</span>
+                <span class="s1">fileData.remove(</span><span class="s2">0</span><span class="s1">);</span>
+            <span class="s1">}</span>
+            <span class="s0">for </span><span class="s1">(String fileDatum : panelData) {</span>
+                <span class="s0">int </span><span class="s1">a = </span><span class="s2">0</span><span class="s1">;</span>
+                <span class="s1">String[] strings = fileDatum.split(</span><span class="s4">&quot;</span><span class="s5">\\</span><span class="s4">s+&quot;</span><span class="s1">);</span>
+                <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">i = </span><span class="s2">0</span><span class="s1">; i &lt; </span><span class="s2">8</span><span class="s1">; i++) {</span>
+                    <span class="s0">if </span><span class="s1">(Integer.parseInt(strings[i]) != </span><span class="s2">1 </span><span class="s1">&amp;&amp; Integer.parseInt(strings[i]) != -</span><span class="s2">1 </span><span class="s1">&amp;&amp; Integer.parseInt(strings[i]) != </span><span class="s2">0</span><span class="s1">) {</span>
+                        <span class="s1">JOptionPane.showMessageDialog(</span><span class="s0">null</span><span class="s1">, </span><span class="s4">&quot;ERROR 102&quot;</span><span class="s1">, </span><span class="s4">&quot;ERROR&quot;</span><span class="s1">, JOptionPane.WARNING_MESSAGE);</span>
+                        <span class="s0">return null</span><span class="s1">;</span>
+                    <span class="s1">}</span>
+                    <span class="s1">ints[a][i] = Integer.parseInt(strings[i]);</span>
+                <span class="s1">}</span>
+                <span class="s1">a++;</span>
+            <span class="s1">}</span>
+            <span class="s0">for </span><span class="s1">(String fileDatum : fileData) {</span>
+                <span class="s1">String[] strings = fileDatum.split(</span><span class="s4">&quot; &quot;</span><span class="s1">);</span>
+                <span class="s0">if </span><span class="s1">(strings.length != </span><span class="s2">3</span><span class="s1">) {</span>
+                    <span class="s1">JOptionPane.showMessageDialog(</span><span class="s0">null</span><span class="s1">, </span><span class="s4">&quot;ERROR 103&quot;</span><span class="s1">, </span><span class="s4">&quot;ERROR&quot;</span><span class="s1">, JOptionPane.WARNING_MESSAGE);</span>
+                    <span class="s0">return null</span><span class="s1">;</span>
+                <span class="s1">}</span>
+                <span class="s0">if </span><span class="s1">(strings[</span><span class="s2">2</span><span class="s1">].equals(</span><span class="s4">&quot;BLACK&quot;</span><span class="s1">)) {</span>
+                    <span class="s1">Step step = </span><span class="s0">new </span><span class="s1">Step(Integer.parseInt(strings[</span><span class="s2">0</span><span class="s1">]), Integer.parseInt(strings[</span><span class="s2">1</span><span class="s1">]), ChessPiece.BLACK);</span>
+                    <span class="s1">steps.add(step);</span>
+                <span class="s1">} </span><span class="s0">else if </span><span class="s1">(strings[</span><span class="s2">2</span><span class="s1">].equals(</span><span class="s4">&quot;WHITE&quot;</span><span class="s1">)) {</span>
+                    <span class="s1">Step step = </span><span class="s0">new </span><span class="s1">Step(Integer.parseInt(strings[</span><span class="s2">0</span><span class="s1">]), Integer.parseInt(strings[</span><span class="s2">1</span><span class="s1">]), ChessPiece.WHITE);</span>
+                    <span class="s1">steps.add(step);</span>
+                <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                    <span class="s1">JOptionPane.showMessageDialog(</span><span class="s0">null</span><span class="s1">, </span><span class="s4">&quot;ERROR 103&quot;</span><span class="s1">, </span><span class="s4">&quot;ERROR&quot;</span><span class="s1">, JOptionPane.WARNING_MESSAGE);</span>
+                    <span class="s0">return null</span><span class="s1">;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+        <span class="s1">} </span><span class="s0">catch </span><span class="s1">(IOException e) {</span>
+            <span class="s1">e.printStackTrace();</span>
+        <span class="s1">}</span>
+        <span class="s1">StepList = steps;</span>
+        <span class="s0">return </span><span class="s1">steps;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public void </span><span class="s1">writeDataToFile(String fileName) {</span>
+        <span class="s3">//todo: write data into file</span>
+        <span class="s1">String path = </span><span class="s4">&quot;C:</span><span class="s5">\\</span><span class="s4">Users</span><span class="s5">\\</span><span class="s4">20694</span><span class="s5">\\</span><span class="s4">IdeaProjects</span><span class="s5">\\</span><span class="s4">untitled</span><span class="s5">\\</span><span class="s4">Project</span><span class="s5">\\</span><span class="s4">src</span><span class="s5">\\</span><span class="s4">&quot; </span><span class="s1">+ fileName;</span>
+        <span class="s0">int</span><span class="s1">[][] gameFile = gamePanel.readGamePanel();</span>
+        <span class="s0">try </span><span class="s1">{</span>
+            <span class="s1">File file = </span><span class="s0">new </span><span class="s1">File(path);</span>
+            <span class="s0">if </span><span class="s1">(!file.exists()) {</span>
+                <span class="s1">file.createNewFile();</span>
+            <span class="s1">}</span>
+            <span class="s1">FileWriter fileWriter = </span><span class="s0">new </span><span class="s1">FileWriter(file.getAbsoluteFile());</span>
+            <span class="s1">BufferedWriter bufferedWriter = </span><span class="s0">new </span><span class="s1">BufferedWriter(fileWriter);</span>
+            <span class="s0">for </span><span class="s1">(</span><span class="s0">int</span><span class="s1">[] a : gameFile) {</span>
+                <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">b : a) {</span>
+                    <span class="s1">bufferedWriter.write(String.valueOf(b));</span>
+                    <span class="s1">bufferedWriter.write(</span><span class="s4">&quot; &quot;</span><span class="s1">);</span>
+                <span class="s1">}</span>
+                <span class="s1">bufferedWriter.newLine();</span>
+            <span class="s1">}</span>
+            <span class="s0">for </span><span class="s1">(Step s : StepList) {</span>
+                <span class="s1">Steps.add((s.getRowIndex()) + </span><span class="s4">&quot; &quot; </span><span class="s1">+ s.getColumnIndex() + </span><span class="s4">&quot; &quot; </span><span class="s1">+ s.getChessPiece());</span>
+            <span class="s1">}</span>
+            <span class="s0">for </span><span class="s1">(String s : Steps) {</span>
+                <span class="s1">bufferedWriter.write(s);</span>
+                <span class="s1">bufferedWriter.newLine();</span>
+            <span class="s1">}</span>
+            <span class="s1">bufferedWriter.close();</span>
+            <span class="s1">fileWriter.close();</span>
+        <span class="s1">} </span><span class="s0">catch </span><span class="s1">(IOException e) {</span>
+            <span class="s1">e.printStackTrace();</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public void </span><span class="s1">resetStatusPanel() {</span>
+        <span class="s1">blackScore = </span><span class="s2">2</span><span class="s1">;</span>
+        <span class="s1">whiteScore = </span><span class="s2">2</span><span class="s1">;</span>
+        <span class="s1">currentPlayer = ChessPiece.BLACK;</span>
+        <span class="s1">statusPanel.setPlayerText(</span><span class="s4">&quot;BLACK&quot;</span><span class="s1">);</span>
+        <span class="s1">statusPanel.setScoreText(blackScore, whiteScore);</span>
+    <span class="s1">}</span>
+<span class="s1">}</span>
+</pre>
+</body>
+</html>
